@@ -1,3 +1,11 @@
+local Ligthing = game:GetService('Lighting')
+local uis = game:GetService('UserInputService');
+local ismobuser =  uis.TouchEnabled
+
+getfenv().vlxtable = {};
+getfenv().lfunctions = {};
+getfenv().heartbeat = {};
+
 local NeverLose = loadstring(game:HttpGet("https://raw.githubusercontent.com/YTMFband/NeverLoseLibrary/refs/heads/main/lib"))()
 local Logging = NeverLose:CreateLogger();
 local Indicator = NeverLose:CreateIndicator();
