@@ -111,6 +111,15 @@ local function row(self, name, h)
 	return r
 end
 
+-- широкая строка (как AddWide* в NeverLose): название сверху, элемент на всю ширину снизу.
+-- rightPad - место справа от названия (например, под значение слайдера)
+local function wideRow(self, name, h, rightPad)
+	self.Order = self.Order + 1
+	local r = new("Frame", { BackgroundTransparency = 1, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, h or 52), LayoutOrder = self.Order }, self.Frame)
+	label(r, { Position = UDim2.new(0, 12, 0, 4), Size = UDim2.new(1, -24 - (rightPad or 0), 0, 16), Text = name or "", TextTruncate = Enum.TextTruncate.AtEnd })
+	return r
+end
+
 -- ===== элементы (есть у секции и у подвкладки) =====
 
 function Container:AddCheckbox(cfg)
@@ -209,17 +218,17 @@ function Container:AddSlider(cfg)
 	local min, max = cfg.Min or 0, cfg.Max or 100
 	local rounding = cfg.Rounding or 0
 	local value = cfg.Default or min
-	local r = row(self, cfg.Name, 36)
+	local r = wideRow(self, cfg.Name, 52, 60)
 
 	local vbox = new("TextLabel", {
-		AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.new(0, 46, 0, 20),
+		AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -12, 0, 4), Size = UDim2.new(0, 46, 0, 16),
 		BackgroundColor3 = C.Field, BorderSizePixel = 0, Font = Enum.Font.GothamMedium, TextSize = 10, TextColor3 = C.Text, Text = "",
 	}, r)
 	corner(vbox, 5)
 
 	-- полоса 26px, скругление 9, заливка с градиентом, белая полоска на конце (Mode = 'Stripe')
 	local bar = new("Frame", {
-		AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -66, 0.5, 0), Size = UDim2.new(0, 150, 0, 26),
+		Position = UDim2.new(0, 12, 0, 26), Size = UDim2.new(1, -24, 0, 22),
 		BackgroundColor3 = Color3.fromRGB(10, 13, 21), BorderSizePixel = 0, ClipsDescendants = true,
 	}, r)
 	corner(bar, 9)
@@ -298,11 +307,11 @@ function Container:AddDropdown(cfg)
 	cfg = cfg or {}
 	local values = cfg.Values or {}
 	local value = cfg.Default or values[1]
-	local r = row(self, cfg.Name, 32)
+	local r = wideRow(self, cfg.Name, 52)
 
 	local field = new("TextButton", {
 		AutoButtonColor = false, Text = "", BorderSizePixel = 0, BackgroundColor3 = C.Field,
-		AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.new(0, 120, 0, 22), ZIndex = 5,
+		Position = UDim2.new(0, 12, 0, 26), Size = UDim2.new(1, -24, 0, 22), ZIndex = 5,
 	}, r)
 	corner(field, 6)
 	stroke(field, C.Stroke, 0.3)
@@ -477,6 +486,9 @@ function Lib:CreateWindow(cfg)
 
 	-- шапка
 	local head = new("Frame", { BackgroundColor3 = C.Head, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 44) }, main)
+	-- шапка скруглена как окно; нижний край возвращаем прямым подложкой
+	corner(head, 14)
+	new("Frame", { BackgroundColor3 = C.Head, BorderSizePixel = 0, Position = UDim2.new(0, 0, 1, -14), Size = UDim2.new(1, 0, 0, 14) }, head)
 	label(head, { Position = UDim2.new(0, 16, 0, 0), Size = UDim2.new(0, 260, 1, 0), Text = cfg.Name or "Window", Font = Enum.Font.GothamBold, TextSize = 14 })
 	if cfg.Subtitle then
 		label(head, { Position = UDim2.new(0, 16 + 8 + #(cfg.Name or "Window") * 8, 0, 0), Size = UDim2.new(0, 200, 1, 0), Text = cfg.Subtitle, TextColor3 = C.Dim, TextSize = 11 })
