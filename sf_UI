@@ -146,8 +146,7 @@ function Container:AddCheckbox(cfg)
 		setValue(not value, true)
 	end)
 
-	if cfg.Keybind ~= nil or bindKey == nil then
-		-- клавиша слева от чекбокса (по умолчанию пусто)
+	if cfg.Keybind ~= nil then
 		chip(r, bindKey, -40, function(k)
 			bindKey = k
 		end)
@@ -210,22 +209,45 @@ function Container:AddSlider(cfg)
 	local min, max = cfg.Min or 0, cfg.Max or 100
 	local rounding = cfg.Rounding or 0
 	local value = cfg.Default or min
-	local r = row(self, cfg.Name, 34)
+	local r = row(self, cfg.Name, 36)
 
 	local vbox = new("TextLabel", {
-		AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.new(0, 46, 0, 18),
+		AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.new(0, 46, 0, 20),
 		BackgroundColor3 = C.Field, BorderSizePixel = 0, Font = Enum.Font.GothamMedium, TextSize = 10, TextColor3 = C.Text, Text = "",
 	}, r)
 	corner(vbox, 5)
 
-	local track = new("Frame", {
-		AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -66, 0.5, 0), Size = UDim2.new(0, 110, 0, 4),
-		BackgroundColor3 = C.Box, BorderSizePixel = 0,
+	-- полоса 26px, скругление 9, заливка с градиентом, белая полоска на конце (Mode = 'Stripe')
+	local bar = new("Frame", {
+		AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -66, 0.5, 0), Size = UDim2.new(0, 150, 0, 26),
+		BackgroundColor3 = Color3.fromRGB(10, 13, 21), BorderSizePixel = 0, ClipsDescendants = true,
 	}, r)
-	corner(track, 2)
-	local fill = new("Frame", { Size = UDim2.new(0, 0, 1, 0), BackgroundColor3 = C.Check, BorderSizePixel = 0 }, track)
-	corner(fill, 2)
-	local hit = new("TextButton", { Text = "", AutoButtonColor = false, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 0, 18), Position = UDim2.new(0, 0, 0.5, -9), ZIndex = 4 }, track)
+	corner(bar, 9)
+	stroke(bar, C.Stroke, 0.1)
+
+	local fill = new("Frame", {
+		Size = UDim2.new(0, 0, 1, 0), BackgroundColor3 = Color3.fromRGB(255, 255, 255), BorderSizePixel = 0, ZIndex = 2,
+	}, bar)
+	corner(fill, 8)
+	new("UIGradient", {
+		Color = ColorSequence.new({
+			ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 146, 255)),
+			ColorSequenceKeypoint.new(0.45, Color3.fromRGB(78, 127, 252)),
+			ColorSequenceKeypoint.new(1, Color3.fromRGB(58, 99, 217)),
+		}),
+		Rotation = 90,
+	}, fill)
+
+	local stripe = new("Frame", {
+		AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -5, 0, 6), Size = UDim2.new(0, 3, 1, -12),
+		BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 0.12, BorderSizePixel = 0, ZIndex = 3,
+	}, fill)
+	corner(stripe, 2)
+	if cfg.Mode == "Plain" then
+		stripe.Visible = false
+	end
+
+	local hit = new("TextButton", { Text = "", AutoButtonColor = false, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ZIndex = 4 }, bar)
 
 	local function paint()
 		local p = (value - min) / (max - min)
@@ -247,7 +269,7 @@ function Container:AddSlider(cfg)
 
 	local dragging = false
 	local function fromMouse(x)
-		local p = math.clamp((x - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+		local p = math.clamp((x - bar.AbsolutePosition.X) / bar.AbsoluteSize.X, 0, 1)
 		setValue(min + p * (max - min), true)
 	end
 
@@ -285,7 +307,7 @@ function Container:AddDropdown(cfg)
 	corner(field, 6)
 	stroke(field, C.Stroke, 0.3)
 	local txt = label(field, { Position = UDim2.new(0, 8, 0, 0), Size = UDim2.new(1, -26, 1, 0), Text = tostring(value or ""), TextSize = 10, ZIndex = 6 })
-	label(field, { Position = UDim2.new(1, -18, 0, 0), Size = UDim2.new(0, 12, 1, 0), Text = "▾", Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = C.Dim, TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 6 })
+	label(field, { Position = UDim2.new(1, -18, 0, 0), Size = UDim2.new(0, 12, 1, 0), Text = "v", Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = C.Dim, TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 6 })
 
 	local list = new("Frame", {
 		Position = UDim2.new(0, 0, 1, 4), Size = UDim2.new(1, 0, 0, #values * 22 + 6),
