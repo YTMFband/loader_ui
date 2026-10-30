@@ -226,7 +226,7 @@ function Container:AddSlider(cfg)
 	}, r)
 	corner(vbox, 5)
 
-	-- полоса 26px, скругление 9, заливка с градиентом, белая полоска на конце (Mode = 'Stripe')
+	-- полоса 22px, скругление 9, заливка с градиентом
 	local bar = new("Frame", {
 		Position = UDim2.new(0, 12, 0, 26), Size = UDim2.new(1, -24, 0, 22),
 		BackgroundColor3 = Color3.fromRGB(10, 13, 21), BorderSizePixel = 0, ClipsDescendants = true,
@@ -247,14 +247,6 @@ function Container:AddSlider(cfg)
 		Rotation = 90,
 	}, fill)
 
-	local stripe = new("Frame", {
-		AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -5, 0, 6), Size = UDim2.new(0, 3, 1, -12),
-		BackgroundColor3 = Color3.fromRGB(255, 255, 255), BackgroundTransparency = 0.12, BorderSizePixel = 0, ZIndex = 3,
-	}, fill)
-	corner(stripe, 2)
-	if cfg.Mode == "Plain" then
-		stripe.Visible = false
-	end
 
 	local hit = new("TextButton", { Text = "", AutoButtonColor = false, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ZIndex = 4 }, bar)
 
@@ -408,6 +400,8 @@ function Tab:AddSection(cfg)
 	new("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder }, frame)
 
 	local head = new("Frame", { BackgroundColor3 = C.Head, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 32), LayoutOrder = 0 }, frame)
+	corner(head, 10)
+	new("Frame", { BackgroundColor3 = C.Head, BorderSizePixel = 0, Position = UDim2.new(0, 0, 1, -10), Size = UDim2.new(1, 0, 0, 10) }, head)
 	label(head, { Position = UDim2.new(0, 12, 0, 0), Size = UDim2.new(1, -24, 1, 0), Text = cfg.Name or "Section", Font = Enum.Font.GothamBold, TextSize = 12 })
 
 	local body = new("Frame", { BackgroundTransparency = 1, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, LayoutOrder = 1 }, frame)
