@@ -1,4 +1,4 @@
-local UIS = game:GetService("UserInputService")
+ocal UIS = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 
@@ -23,6 +23,21 @@ local C = {
 	Text = Color3.fromRGB(245, 245, 250),
 	Dim = Color3.fromRGB(140, 145, 160),
 }
+
+-- анимации: SNAP - мгновенно, FAST - наведение/цвета, SLIDE - полоса слайдера, MED - открытие
+local SNAP = TweenInfo.new(0)
+local FAST = TweenInfo.new(0.15, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+local SLIDE = TweenInfo.new(0.08, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local MED = TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out)
+
+local function tween(o, info, props)
+	local t = TweenService:Create(o, info, props)
+	t:Play()
+	return t
+end
+
+-- закрывает открытый dropdown, чтобы открытым был только один
+local ActiveClose = nil
 
 local function new(class, props, parent)
 	local o = Instance.new(class)
@@ -136,10 +151,11 @@ function Container:AddCheckbox(cfg)
 	local st = stroke(box, C.Stroke, 0.2)
 	local mark = label(box, { Size = UDim2.new(1, 0, 1, 0), Text = "✓", Font = Enum.Font.GothamBold, TextSize = 12, TextColor3 = Color3.fromRGB(20, 20, 28), TextXAlignment = Enum.TextXAlignment.Center, TextTransparency = 1 })
 
-	local function paint()
-		box.BackgroundColor3 = value and C.Check or C.Box
-		st.Transparency = value and 1 or 0.2
-		mark.TextTransparency = value and 0 or 1
+	local function paint(instant)
+		local info = instant and SNAP or FAST
+		tween(box, info, { BackgroundColor3 = value and C.Check or C.Box })
+		tween(st, info, { Transparency = value and 1 or 0.2 })
+		tween(mark, info, { TextTransparency = value and 0 or 1 })
 	end
 
 	local function setValue(v, fire)
@@ -150,7 +166,7 @@ function Container:AddCheckbox(cfg)
 		end
 	end
 
-	paint()
+	paint(true)
 	box.Activated:Connect(function()
 		setValue(not value, true)
 	end)
@@ -237,7 +253,7 @@ function Container:AddSlider(cfg)
 	local fill = new("Frame", {
 		Size = UDim2.new(0, 0, 1, 0), BackgroundColor3 = Color3.fromRGB(255, 255, 255), BorderSizePixel = 0, ZIndex = 2,
 	}, bar)
-	corner(fill, 8)
+	local fillCorner = corner(fill, 8)
 	new("UIGradient", {
 		Color = ColorSequence.new({
 			ColorSequenceKeypoint.new(0, Color3.fromRGB(100, 146, 255)),
@@ -250,9 +266,12 @@ function Container:AddSlider(cfg)
 
 	local hit = new("TextButton", { Text = "", AutoButtonColor = false, BackgroundTransparency = 1, Size = UDim2.new(1, 0, 1, 0), ZIndex = 4 }, bar)
 
-	local function paint()
+	local function paint(instant)
 		local p = (value - min) / (max - min)
-		fill.Size = UDim2.new(p, 0, 1, 0)
+		tween(fill, instant and SNAP or SLIDE, { Size = UDim2.new(p, 0, 1, 0) })
+		-- радиус не больше половины заливки, поэтому у маленького значения полоса не выглядит пятном
+		local px = p * (bar.AbsoluteSize.X > 0 and bar.AbsoluteSize.X or 150)
+		fillCorner.CornerRadius = UDim.new(0, math.clamp(math.floor(px / 2), 0, 8))
 		vbox.Text = string.format("%." .. rounding .. "f", value)
 	end
 
@@ -266,7 +285,7 @@ function Container:AddSlider(cfg)
 		end
 	end
 
-	paint()
+	paint(true)
 
 	local dragging = false
 	local function fromMouse(x)
@@ -310,14 +329,46 @@ function Container:AddDropdown(cfg)
 	local txt = label(field, { Position = UDim2.new(0, 8, 0, 0), Size = UDim2.new(1, -26, 1, 0), Text = tostring(value or ""), TextSize = 10, ZIndex = 6 })
 	label(field, { Position = UDim2.new(1, -18, 0, 0), Size = UDim2.new(0, 12, 1, 0), Text = "v", Font = Enum.Font.GothamBold, TextSize = 10, TextColor3 = C.Dim, TextXAlignment = Enum.TextXAlignment.Center, ZIndex = 6 })
 
+	local fullH = #values * 22 + 6
 	local list = new("Frame", {
-		Position = UDim2.new(0, 0, 1, 4), Size = UDim2.new(1, 0, 0, #values * 22 + 6),
-		BackgroundColor3 = C.Panel, BorderSizePixel = 0, Visible = false, ZIndex = 50,
+		Position = UDim2.new(0, 0, 1, 4), Size = UDim2.new(1, 0, 0, 0),
+		BackgroundColor3 = C.Panel, BorderSizePixel = 0, Visible = false, ZIndex = 50, ClipsDescendants = true,
 	}, field)
 	corner(list, 6)
 	stroke(list, C.Stroke, 0.3)
 	new("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder }, list)
 	new("UIPadding", { PaddingTop = UDim.new(0, 3), PaddingBottom = UDim.new(0, 3) }, list)
+
+	local isOpen = false
+	local setOpen
+	local function closeSelf()
+		setOpen(false)
+	end
+
+	setOpen = function(open)
+		if open == isOpen then
+			return
+		end
+		isOpen = open
+		if open then
+			if ActiveClose then
+				ActiveClose()
+			end
+			ActiveClose = closeSelf
+			list.Visible = true
+			tween(list, MED, { Size = UDim2.new(1, 0, 0, fullH) })
+		else
+			if ActiveClose == closeSelf then
+				ActiveClose = nil
+			end
+			local t = tween(list, FAST, { Size = UDim2.new(1, 0, 0, 0) })
+			t.Completed:Connect(function()
+				if not isOpen then
+					list.Visible = false
+				end
+			end)
+		end
+	end
 
 	local function setValue(v, fire)
 		value = v
@@ -330,16 +381,43 @@ function Container:AddDropdown(cfg)
 	for i, v in ipairs(values) do
 		local it = new("TextButton", {
 			AutoButtonColor = false, Text = tostring(v), Font = Enum.Font.GothamMedium, TextSize = 10, TextColor3 = C.Text,
-			BackgroundTransparency = 1, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 22), LayoutOrder = i, ZIndex = 51,
+			BackgroundColor3 = C.Hover, BackgroundTransparency = 1, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 22), LayoutOrder = i, ZIndex = 51,
 		}, list)
+		it.MouseEnter:Connect(function()
+			tween(it, FAST, { BackgroundTransparency = 0.4 })
+		end)
+		it.MouseLeave:Connect(function()
+			tween(it, FAST, { BackgroundTransparency = 1 })
+		end)
 		it.Activated:Connect(function()
 			setValue(v, true)
-			list.Visible = false
+			setOpen(false)
 		end)
 	end
 
+	field.MouseEnter:Connect(function()
+		tween(field, FAST, { BackgroundColor3 = C.Box })
+	end)
+	field.MouseLeave:Connect(function()
+		tween(field, FAST, { BackgroundColor3 = C.Field })
+	end)
 	field.Activated:Connect(function()
-		list.Visible = not list.Visible
+		setOpen(not isOpen)
+	end)
+
+	-- клик мимо dropdown закрывает его
+	UIS.InputBegan:Connect(function(input)
+		if not isOpen or input.UserInputType ~= Enum.UserInputType.MouseButton1 then
+			return
+		end
+		local p = input.Position
+		local function hit(o)
+			local a, sz = o.AbsolutePosition, o.AbsoluteSize
+			return p.X >= a.X and p.X <= a.X + sz.X and p.Y >= a.Y and p.Y <= a.Y + sz.Y
+		end
+		if not hit(field) and not hit(list) then
+			setOpen(false)
+		end
 	end)
 
 	register(cfg.Flag, function() return value end, function(v) setValue(v, true) end)
@@ -359,8 +437,7 @@ function Container:AddSubTabs(names)
 			s.Frame.Visible = (n == name)
 		end
 		for n, b in pairs(btns) do
-			b.BackgroundTransparency = (n == name) and 0 or 1
-			b.TextColor3 = (n == name) and C.Text or C.Dim
+			tween(b, FAST, { BackgroundTransparency = (n == name) and 0 or 1, TextColor3 = (n == name) and C.Text or C.Dim })
 		end
 	end
 
@@ -414,13 +491,22 @@ end
 -- ===== окно =====
 
 function Lib:SelectTab(tab)
+	if self.Current == tab then
+		return
+	end
 	for _, t in ipairs(self.Tabs) do
 		local on = (t == tab)
-		t.Page.Visible = on
-		t.Button.BackgroundTransparency = on and 0 or 1
-		t.Label.TextColor3 = on and C.Text or C.Dim
+		tween(t.Button, FAST, { BackgroundTransparency = on and 0 or 1 })
+		tween(t.Label, FAST, { TextColor3 = on and C.Text or C.Dim })
 		if t.Icon then
-			t.Icon.TextColor3 = on and C.Text or C.Dim
+			tween(t.Icon, FAST, { TextColor3 = on and C.Text or C.Dim })
+		end
+		if on then
+			t.Page.Visible = true
+			t.Page.Position = UDim2.new(0, 0, 0, 14)
+			tween(t.Page, MED, { Position = UDim2.new(0, 0, 0, 0) })
+		else
+			t.Page.Visible = false
 		end
 	end
 	self.Current = tab
@@ -453,6 +539,16 @@ function Lib:AddTab(cfg)
 	table.insert(self.Tabs, tab)
 	btn.Activated:Connect(function()
 		self:SelectTab(tab)
+	end)
+	btn.MouseEnter:Connect(function()
+		if self.Current ~= tab then
+			tween(btn, FAST, { BackgroundTransparency = 0.6 })
+		end
+	end)
+	btn.MouseLeave:Connect(function()
+		if self.Current ~= tab then
+			tween(btn, FAST, { BackgroundTransparency = 1 })
+		end
 	end)
 	if #self.Tabs == 1 then
 		self:SelectTab(tab)
@@ -522,13 +618,41 @@ function Lib:CreateWindow(cfg)
 
 	self.Body = new("Frame", { BackgroundTransparency = 1, BorderSizePixel = 0, Position = UDim2.new(0, 0, 0, 96), Size = UDim2.new(1, 0, 1, -96) }, main)
 
-	-- открытие / закрытие клавишей (по умолчанию Insert)
+	-- открытие / закрытие клавишей (по умолчанию Insert) с анимацией масштаба
+	local scale = new("UIScale", { Scale = 1 }, main)
 	local toggleKey = cfg.Key or Enum.KeyCode.Insert
+	local token = 0
+
+	local function show()
+		token += 1
+		gui.Enabled = true
+		scale.Scale = 0.94
+		tween(scale, MED, { Scale = 1 })
+	end
+
+	local function hide()
+		token += 1
+		local my = token
+		local t = tween(scale, FAST, { Scale = 0.94 })
+		t.Completed:Connect(function()
+			if my == token then
+				gui.Enabled = false
+			end
+		end)
+	end
+
 	UIS.InputBegan:Connect(function(input, gp)
 		if not gp and input.KeyCode == toggleKey then
-			gui.Enabled = not gui.Enabled
+			if gui.Enabled then
+				hide()
+			else
+				show()
+			end
 		end
 	end)
+
+	-- первое появление тоже с анимацией
+	show()
 
 	return self
 end
