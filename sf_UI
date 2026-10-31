@@ -7738,7 +7738,7 @@ function NeverLose:CreateWindow(Config)
 				TextTransparency = 0.350
 			})
 
-			Window.Shadow:Render(true);
+			Window.Shadow:Render(false);
 		else
 
 			NeverLose.PlayAnimate(WindowFrame , SlowyTween , {
@@ -8064,8 +8064,28 @@ function NeverLose:CreateWindow(Config)
 	RightMenuFrame.ClipsDescendants = true
 	-- ===== верхняя панель: название в шапке, пользователь справа, вкладки в один ряд под шапкой =====
 	LeftMenuFrame.Size = UDim2.new(1, 0, 0, 32);
-	LeftMenuFrame.BackgroundColor3 = Color3.fromRGB(16, 16, 24);
-	LeftMenuFrame.BackgroundTransparency = 0;
+	LeftMenuFrame.BackgroundTransparency = 1;
+
+	local HeaderBg = Instance.new("Frame");
+	local HeaderBgCorner = Instance.new("UICorner");
+	local HeaderBgSquare = Instance.new("Frame");
+
+	HeaderBg.Name = NeverLose.RandomString();
+	HeaderBg.Parent = WindowFrame;
+	HeaderBg.BackgroundColor3 = Color3.fromRGB(16, 16, 24);
+	HeaderBg.BorderSizePixel = 0;
+	HeaderBg.Size = UDim2.new(1, 0, 0, 32);
+	HeaderBg.ZIndex = 0;
+	HeaderBgCorner.CornerRadius = UDim.new(0, 8);
+	HeaderBgCorner.Parent = HeaderBg;
+
+	HeaderBgSquare.Name = NeverLose.RandomString();
+	HeaderBgSquare.Parent = WindowFrame;
+	HeaderBgSquare.BackgroundColor3 = Color3.fromRGB(16, 16, 24);
+	HeaderBgSquare.BorderSizePixel = 0;
+	HeaderBgSquare.Position = UDim2.new(0, 0, 0, 22);
+	HeaderBgSquare.Size = UDim2.new(1, 0, 0, 10);
+	HeaderBgSquare.ZIndex = 0;
 	HeadFrame.Size = UDim2.new(0, 260, 1, 0);
 	WindowContent.Visible = false;
 	LineFrame.Visible = false;
