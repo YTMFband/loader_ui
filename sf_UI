@@ -7699,7 +7699,7 @@ function NeverLose:CreateWindow(Config)
 			})
 
 			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
-				Transparency = 0.650
+				Transparency = 1.000
 			})
 
 			NeverLose.PlayAnimate(LineFrame_3 , SlowyTween , {
@@ -7711,7 +7711,7 @@ function NeverLose:CreateWindow(Config)
 			})
 
 			NeverLose.PlayAnimate(UIStroke_2 , SlowyTween , {
-				Transparency = 0.650
+				Transparency = 1.000
 			})
 
 			NeverLose.PlayAnimate(ConfigIcon , SlowyTween , {
@@ -8064,7 +8064,8 @@ function NeverLose:CreateWindow(Config)
 	RightMenuFrame.ClipsDescendants = true
 	-- ===== верхняя панель: название в шапке, пользователь справа, вкладки в один ряд под шапкой =====
 	LeftMenuFrame.Size = UDim2.new(1, 0, 0, 32);
-	LeftMenuFrame.BackgroundTransparency = 1;
+	LeftMenuFrame.BackgroundColor3 = Color3.fromRGB(16, 16, 24);
+	LeftMenuFrame.BackgroundTransparency = 0;
 	HeadFrame.Size = UDim2.new(0, 260, 1, 0);
 	WindowContent.Visible = false;
 	LineFrame.Visible = false;
