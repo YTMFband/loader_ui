@@ -1606,7 +1606,7 @@ NeverLose.ProcessParams = LPH_NO_VIRTUALIZE(function(self , Params , Fixed)
 	return k;
 end);
 
-NeverLose.EnabledBlur = true;
+NeverLose.EnabledBlur = false;
 NeverLose.BlurModuleParent = CurrentCamera;
 
 NeverLose.GetCalculatePosition = LPH_NO_VIRTUALIZE(function(planePos, planeNormal, rayOrigin, rayDirection)
@@ -7658,6 +7658,10 @@ function NeverLose:CreateWindow(Config)
 				Size = Window.Size
 			})
 
+			for _ , h in ipairs(Window.HeaderBgs or {}) do
+				NeverLose.PlayAnimate(h , SlowyTween , { BackgroundTransparency = (NeverLose.EnabledBlur and 0.055) or 0.0255 })
+			end;
+
 			NeverLose.PlayAnimate(LogoImage , SlowyTween , {
 				ImageTransparency = 0
 			})
@@ -7745,6 +7749,10 @@ function NeverLose:CreateWindow(Config)
 				BackgroundTransparency = 1,
 				Size = Window.Size + UDim2.fromOffset(-15,-15)
 			})
+
+			for _ , h in ipairs(Window.HeaderBgs or {}) do
+				NeverLose.PlayAnimate(h , SlowyTween , { BackgroundTransparency = 1 })
+			end;
 
 			NeverLose.PlayAnimate(LogoImage , SlowyTween , {
 				ImageTransparency = 1
@@ -8086,6 +8094,8 @@ function NeverLose:CreateWindow(Config)
 	HeaderBgSquare.Position = UDim2.new(0, 0, 0, 22);
 	HeaderBgSquare.Size = UDim2.new(1, 0, 0, 10);
 	HeaderBgSquare.ZIndex = 0;
+
+	Window.HeaderBgs = { HeaderBg, HeaderBgSquare };
 	HeadFrame.Size = UDim2.new(0, 260, 1, 0);
 	WindowContent.Visible = false;
 	LineFrame.Visible = false;
