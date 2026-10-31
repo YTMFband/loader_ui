@@ -8063,7 +8063,7 @@ function NeverLose:CreateWindow(Config)
 	RightMenuFrame.BorderSizePixel = 0
 	RightMenuFrame.ClipsDescendants = true
 	-- ===== верхняя панель: название в шапке, пользователь справа, вкладки в один ряд под шапкой =====
-	LeftMenuFrame.Size = UDim2.new(1, 0, 0, 50);
+	LeftMenuFrame.Size = UDim2.new(1, 0, 0, 40);
 	LeftMenuFrame.BackgroundTransparency = 1;
 	HeadFrame.Size = UDim2.new(0, 260, 1, 0);
 	WindowContent.Visible = false;
@@ -8075,7 +8075,7 @@ function NeverLose:CreateWindow(Config)
 
 	LeftScrollingFrame.Parent = WindowFrame;
 	LeftScrollingFrame.AnchorPoint = Vector2.new(0, 0);
-	LeftScrollingFrame.Position = UDim2.new(0, 12, 0, 54);
+	LeftScrollingFrame.Position = UDim2.new(0, 12, 0, 44);
 	LeftScrollingFrame.Size = UDim2.new(1, -24, 0, 40);
 	LeftScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.X;
 	LeftScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.X;
@@ -8084,12 +8084,12 @@ function NeverLose:CreateWindow(Config)
 	UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center;
 	UIListLayout.Padding = UDim.new(0, 6);
 
-	RightMenuFrame.Position = UDim2.new(0, 0, 0, 100);
-	RightMenuFrame.Size = UDim2.new(1, 0, 1, -100);
+	RightMenuFrame.Position = UDim2.new(0, 0, 0, 90);
+	RightMenuFrame.Size = UDim2.new(1, 0, 1, -90);
 
 	-- убираем логотип, профиль и строку конфига с поиском
 	LogoImage.Visible = false;
-	WindowName.Position = UDim2.new(0, 16, 0, 12);
+	WindowName.Position = UDim2.new(0, 16, 0, 7);
 	BottomFrame.Visible = false;
 	RightHeader.Visible = false;
 	RightMenuFrame.ZIndex = 8
@@ -8827,7 +8827,7 @@ function NeverLose:CreateWindow(Config)
 			SectionHandler.Size = UDim2.new(1, -10, 1, -21)
 			SectionHandler.ZIndex = 9
 
-			UIStroke.Transparency = 0.650
+			UIStroke.Transparency = 1.000
 			UIStroke.Color = NeverLose.Theme.Stroke
 			UIStroke.Parent = SectionHandler
 
