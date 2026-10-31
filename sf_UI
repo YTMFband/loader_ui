@@ -8086,6 +8086,12 @@ function NeverLose:CreateWindow(Config)
 
 	RightMenuFrame.Position = UDim2.new(0, 0, 0, 100);
 	RightMenuFrame.Size = UDim2.new(1, 0, 1, -100);
+
+	-- убираем логотип, профиль и строку конфига с поиском
+	LogoImage.Visible = false;
+	WindowName.Position = UDim2.new(0, 16, 0, 12);
+	BottomFrame.Visible = false;
+	RightHeader.Visible = false;
 	RightMenuFrame.ZIndex = 8
 
 	UIStroke.Transparency = 0.650
@@ -8248,8 +8254,8 @@ function NeverLose:CreateWindow(Config)
 	TabContainer.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	TabContainer.BorderSizePixel = 0
 	TabContainer.ClipsDescendants = true
-	TabContainer.Position = UDim2.new(0, 0, 0, 50)
-	TabContainer.Size = UDim2.new(1, 0, 1, -50)
+	TabContainer.Position = UDim2.new(0, 0, 0, 0)
+	TabContainer.Size = UDim2.new(1, 0, 1, 0)
 	TabContainer.ZIndex = 5
 
 	do
@@ -8421,6 +8427,7 @@ function NeverLose:CreateWindow(Config)
 		TabLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabLabel.BorderSizePixel = 0
 		TabLabel.Size = UDim2.new(1, -7, 0, 15)
+		TabLabel.Visible = false;
 		TabLabel.ZIndex = 8
 		TabLabel.Font = Enum.Font.GothamMedium
 		TabLabel.Text = Name
@@ -8509,7 +8516,7 @@ function NeverLose:CreateWindow(Config)
 		TabContentLabel.TextXAlignment = Enum.TextXAlignment.Left
 		-- верхняя панель: кнопка вкладки по ширине текста, вкладки в один ряд
 		local TabTextW = NeverLose.GetTextSize(Config.Name , 12 , Enum.Font.GothamMedium , Vector2.new(math.huge , math.huge)).X;
-		TabButton.Size = UDim2.new(0 , TabTextW + 44 , 0 , 30);
+		TabButton.Size = UDim2.new(0 , math.max(TabTextW + 44 , 70) , 0 , 30);
 		TabContentLabel.Size = UDim2.new(0 , TabTextW + 6 , 0 , 15);
 
 		local TabFrame = Instance.new("Frame")
