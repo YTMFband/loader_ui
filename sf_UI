@@ -8195,8 +8195,8 @@ function NeverLose:CreateWindow(Config)
 
 	LeftScrollingFrame.Parent = WindowFrame;
 	LeftScrollingFrame.AnchorPoint = Vector2.new(0, 0);
-	LeftScrollingFrame.Position = UDim2.new(0, 12, 0, 34);
-	LeftScrollingFrame.Size = UDim2.new(1, -24, 0, 36);
+	LeftScrollingFrame.Position = UDim2.new(0, 14, 0, 34);
+	LeftScrollingFrame.Size = UDim2.new(1, -28, 0, 36);
 	LeftScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.X;
 	LeftScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.X;
 	UIListLayout.FillDirection = Enum.FillDirection.Horizontal;
