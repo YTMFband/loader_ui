@@ -8640,7 +8640,7 @@ function NeverLose:CreateWindow(Config)
 		TabIcon.BackgroundTransparency = 1.000
 		TabIcon.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabIcon.BorderSizePixel = 0
-		TabIcon.Position = UDim2.new(0, 2, 0.5, 0)
+		TabIcon.Position = UDim2.new(0, 10, 0.5, 0)
 		TabIcon.Size = UDim2.new(0, 25, 0, 25)
 		TabIcon.ZIndex = 9
 		TabIcon.FontFace = NeverLose.BuiltInBold
@@ -8656,7 +8656,7 @@ function NeverLose:CreateWindow(Config)
 		TabContentLabel.BackgroundTransparency = 1.000
 		TabContentLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabContentLabel.BorderSizePixel = 0
-		TabContentLabel.Position = UDim2.new(0, 30, 0.5, 0)
+		TabContentLabel.Position = UDim2.new(0, 36, 0.5, 0)
 		TabContentLabel.Size = UDim2.new(1, -7, 0, 15)
 		TabContentLabel.ZIndex = 9
 		TabContentLabel.Font = Enum.Font.GothamMedium
@@ -8666,7 +8666,7 @@ function NeverLose:CreateWindow(Config)
 		TabContentLabel.TextXAlignment = Enum.TextXAlignment.Left
 		-- верхняя панель: кнопка вкладки по ширине текста, вкладки в один ряд
 		local TabTextW = NeverLose.GetTextSize(Config.Name , 12 , Enum.Font.GothamMedium , Vector2.new(math.huge , math.huge)).X;
-		TabButton.Size = UDim2.new(0 , math.max(TabTextW + 44 , 70) , 0 , 30);
+		TabButton.Size = UDim2.new(0 , math.max(TabTextW + 50 , 70) , 0 , 30);
 		TabContentLabel.Size = UDim2.new(0 , TabTextW + 6 , 0 , 15);
 
 		local TabFrame = Instance.new("Frame")
