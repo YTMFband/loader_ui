@@ -6491,8 +6491,8 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 			Font = Enum.Font.GothamMedium,
 			Text = Config.Name,
 			TextColor3 = NeverLose.Theme.Text,
-			TextSize = 13,
-			TextTransparency = 0.3,
+TextSize = 13,
+			TextTransparency = 0.12,
 			TextTruncate = Enum.TextTruncate.AtEnd,
 			TextXAlignment = Enum.TextXAlignment.Left,
 			ZIndex = Z + 9,
@@ -8939,7 +8939,7 @@ Style = nil          -- 'Inside' (название внутри карточки
 
 local Bare = string.lower(tostring(Config.Style or '')) == 'bare';
 			local Collapsed = (Config.Collapsible == true) and (Config.Collapsed == true) and not Bare;
-			local Inside = string.lower(tostring(Config.Style or NeverLose.SectionStyle or 'Inside')) ~= 'classic';
+local Inside = (string.lower(tostring(Config.Style or NeverLose.SectionStyle or 'Inside')) ~= 'classic') and not Bare;
 			local HeaderH = 30;
 
 			local SectionFrame = Instance.new("Frame")
@@ -8981,7 +8981,16 @@ local Bare = string.lower(tostring(Config.Style or '')) == 'bare';
 			SectionLabel.TextColor3 = NeverLose.Theme.Text
 			SectionLabel.TextSize = 11.000
 			SectionLabel.TextTransparency = 0.500
-			SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
+SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
+			if Bare then
+				SectionLabel.AnchorPoint = Vector2.new(0, 0);
+				SectionLabel.Position = UDim2.new(0, 6, 0, 0);
+				SectionLabel.Size = UDim2.new(1, -12, 0, 18);
+				SectionLabel.Font = Enum.Font.GothamBold;
+				SectionLabel.TextSize = 12;
+				SectionLabel.TextTransparency = 0.1;
+				SectionLabel.Visible = true;
+			end;
 
 			SectionHandler.Name = NeverLose.RandomString();
 			SectionHandler.Parent = SectionFrame
