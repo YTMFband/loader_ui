@@ -7820,8 +7820,9 @@ function NeverLose:CreateWindow(Config)
 
 	NeverLose:AddSignal(WindowFrame:GetPropertyChangedSignal('BackgroundTransparency'):Connect(renderParentWindow))
 
-	-- все дочерние элементы окна гаснут и появляются одним твином вместе с окном (иначе остаются полупрозрачные куски)
-	local FadeCache = {};
+	-- все дочерние элементы окна гаснут и появляются одним твином вместе с окном
+	-- FadeCache = снимок значений в момент закрытия (nil, пока окно открыто)
+	local FadeCache = nil;
 	local FadeProps = {
 		Frame = { 'BackgroundTransparency' },
 		ScrollingFrame = { 'BackgroundTransparency' },
@@ -7833,30 +7834,49 @@ function NeverLose:CreateWindow(Config)
 	};
 
 	local function windowFade(visible)
+		if visible then
+			if not FadeCache then
+				return;
+			end;
+
+			for obj , cache in next , FadeCache do
+				if obj.Parent then
+					local goal = {};
+					for p , v in next , cache do
+						goal[p] = v;
+					end;
+					NeverLose.PlayAnimate(obj , SlowyTween , goal);
+				end;
+			end;
+
+			FadeCache = nil;
+			return;
+		end;
+
+		if FadeCache then
+			return; -- уже закрыто, второй снимок не делаем
+		end;
+
 		local skip = { [WindowFrame] = true };
 		for _ , h in ipairs(Window.HeaderBgs or {}) do
 			skip[h] = true;
 		end;
 
+		FadeCache = {};
+
 		for _ , obj in ipairs(WindowFrame:GetDescendants()) do
 			local props = FadeProps[obj.ClassName];
 
 			if props and not skip[obj] then
-				local cache = FadeCache[obj] or {};
-				FadeCache[obj] = cache;
+				local cache = {};
 				local goal = {};
 
 				for _ , p in ipairs(props) do
-					if visible then
-						goal[p] = cache[p] or obj[p];
-					else
-						if cache[p] == nil then
-							cache[p] = obj[p];
-						end;
-						goal[p] = 1;
-					end;
+					cache[p] = obj[p];
+					goal[p] = 1;
 				end;
 
+				FadeCache[obj] = cache;
 				NeverLose.PlayAnimate(obj , SlowyTween , goal);
 			end;
 		end;
