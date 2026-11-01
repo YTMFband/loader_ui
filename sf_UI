@@ -267,6 +267,23 @@ NeverLose.StartedAt = os.clock();
 -- ТЕМЫ: цвета интерфейса берутся из ролей NeverLose.Theme
 -- NeverLose:SetTheme('One Dark')  /  NeverLose:SetTheme({ Accent = Color3.fromRGB(255, 80, 120) })
 NeverLose.Themes = {
+	['Matcha'] = {
+		Main = Color3.fromRGB(27, 25, 36),
+		Card = Color3.fromRGB(31, 30, 46),
+		Elem = Color3.fromRGB(42, 40, 60),
+		Elem2 = Color3.fromRGB(48, 46, 68),
+		Hover = Color3.fromRGB(56, 55, 71),
+		Field = Color3.fromRGB(42, 40, 60),
+		Deep = Color3.fromRGB(42, 40, 60),
+		Deep2 = Color3.fromRGB(36, 34, 50),
+		Track = Color3.fromRGB(56, 55, 71),
+		Stroke = Color3.fromRGB(60, 58, 78),
+		Text = Color3.fromRGB(235, 235, 240),
+		Icon = Color3.fromRGB(223, 223, 223),
+		TextDim = Color3.fromRGB(190, 195, 205),
+		TextMute = Color3.fromRGB(140, 145, 160),
+		Accent = Color3.fromRGB(200, 199, 203),
+	},
 	['NeverLose'] = {
 		Main = Color3.fromRGB(8, 8, 13),
 		Card = Color3.fromRGB(20, 22, 27),
@@ -593,9 +610,9 @@ NeverLose.Themes = {
 };
 
 NeverLose.Theme = {};
-NeverLose.CurrentTheme = 'NeverLose';
+NeverLose.CurrentTheme = 'Matcha';
 
-for k , v in next , NeverLose.Themes['NeverLose'] do
+for k , v in next , NeverLose.Themes[NeverLose.CurrentTheme] do
 	NeverLose.Theme[k] = v;
 end;
 
@@ -6483,7 +6500,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 
 		local function paint(value)
 			if value then
-				NeverLose.PlayAnimate(Box , SlowyTween , { BackgroundColor3 = Color3.fromRGB(240 , 240 , 245) });
+				NeverLose.PlayAnimate(Box , SlowyTween , { BackgroundColor3 = NeverLose.Theme.Accent });
 				NeverLose.PlayAnimate(BoxStroke , SlowyTween , { Transparency = 1 });
 			else
 				NeverLose.PlayAnimate(Box , SlowyTween , { BackgroundColor3 = NeverLose.Theme.Deep });
@@ -8623,7 +8640,7 @@ function NeverLose:CreateWindow(Config)
 
 		TabButton.Name = NeverLose.RandomString();
 		TabButton.Parent = LeftScrollingFrame
-		TabButton.BackgroundColor3 = Color3.fromRGB(41, 45, 49)
+		TabButton.BackgroundColor3 = NeverLose.Theme.Hover
 		TabButton.BackgroundTransparency = 0.500
 		TabButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabButton.BorderSizePixel = 0
