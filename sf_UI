@@ -267,23 +267,6 @@ NeverLose.StartedAt = os.clock();
 -- ТЕМЫ: цвета интерфейса берутся из ролей NeverLose.Theme
 -- NeverLose:SetTheme('One Dark')  /  NeverLose:SetTheme({ Accent = Color3.fromRGB(255, 80, 120) })
 NeverLose.Themes = {
-	['Matcha'] = {
-		Main = Color3.fromRGB(27, 25, 36),
-		Card = Color3.fromRGB(31, 30, 46),
-		Elem = Color3.fromRGB(42, 40, 60),
-		Elem2 = Color3.fromRGB(48, 46, 68),
-		Hover = Color3.fromRGB(56, 55, 71),
-		Field = Color3.fromRGB(42, 40, 60),
-		Deep = Color3.fromRGB(42, 40, 60),
-		Deep2 = Color3.fromRGB(36, 34, 50),
-		Track = Color3.fromRGB(56, 55, 71),
-		Stroke = Color3.fromRGB(60, 58, 78),
-		Text = Color3.fromRGB(235, 235, 240),
-		Icon = Color3.fromRGB(223, 223, 223),
-		TextDim = Color3.fromRGB(190, 195, 205),
-		TextMute = Color3.fromRGB(140, 145, 160),
-		Accent = Color3.fromRGB(200, 199, 203),
-	},
 	['NeverLose'] = {
 		Main = Color3.fromRGB(8, 8, 13),
 		Card = Color3.fromRGB(20, 22, 27),
@@ -612,7 +595,7 @@ NeverLose.Themes = {
 NeverLose.Theme = {};
 NeverLose.CurrentTheme = 'NeverLose';
 
-for k , v in next , NeverLose.Themes[NeverLose.CurrentTheme] do
+for k , v in next , NeverLose.Themes['NeverLose'] do
 	NeverLose.Theme[k] = v;
 end;
 
@@ -1623,7 +1606,7 @@ NeverLose.ProcessParams = LPH_NO_VIRTUALIZE(function(self , Params , Fixed)
 	return k;
 end);
 
-NeverLose.EnabledBlur = false;
+NeverLose.EnabledBlur = true;
 NeverLose.BlurModuleParent = CurrentCamera;
 
 NeverLose.GetCalculatePosition = LPH_NO_VIRTUALIZE(function(planePos, planeNormal, rayOrigin, rayDirection)
@@ -1951,11 +1934,11 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 		if value then
 			SetPosition();
 
-			NeverLose.PlayAnimate(OptionHandler , FadeInfo , {
+			NeverLose.PlayAnimate(OptionHandler , SlowyTween , {
 				BackgroundTransparency = 0.035
 			})
 
-			NeverLose.PlayAnimate(UIStroke , FadeInfo , {
+			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
 				Transparency = 0.650
 			})
 
@@ -1978,11 +1961,11 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 				end;
 			end));
 		else
-			NeverLose.PlayAnimate(OptionHandler , FadeInfo , {
+			NeverLose.PlayAnimate(OptionHandler , SlowyTween , {
 				BackgroundTransparency = 1
 			})
 
-			NeverLose.PlayAnimate(UIStroke , FadeInfo , {
+			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
 				Transparency = 1
 			})
 
@@ -2395,15 +2378,12 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 		local Toggle = Instance.new("Frame")
 		local UICorner = Instance.new("UICorner")
-		local TrackGradient = Instance.new("UIGradient")
-		local TrackStroke = Instance.new("UIStroke")
 		local Circle = Instance.new("Frame")
 		local UICorner_2 = Instance.new("UICorner")
-		local CircleGradient = Instance.new("UIGradient")
 
 		Toggle.Name = NeverLose.RandomString();
 		Toggle.Parent = Handler
-		Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- цвет задаёт градиент
+		Toggle.BackgroundColor3 = NeverLose.Theme.Deep
 		Toggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Toggle.BorderSizePixel = 0
 		Toggle.ClipsDescendants = true
@@ -2413,14 +2393,6 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 		UICorner.CornerRadius = UDim.new(1, 0)
 		UICorner.Parent = Toggle
-
-		TrackGradient.Rotation = 90
-		TrackGradient.Parent = Toggle
-
-		TrackStroke.Thickness = 1
-		TrackStroke.Color = NeverLose.AccentColor
-		TrackStroke.Transparency = 1
-		TrackStroke.Parent = Toggle
 
 		Circle.Name = NeverLose.RandomString();
 		Circle.Parent = Toggle
@@ -2436,31 +2408,15 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		UICorner_2.CornerRadius = UDim.new(1, 0)
 		UICorner_2.Parent = Circle
 
-		CircleGradient.Rotation = 90
-		CircleGradient.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(217, 220, 230))
-		CircleGradient.Parent = Circle
-
-		-- градиенты берутся из текущей темы и акцента при каждом переключении
-		local function offTrack()
-			return ColorSequence.new(NeverLose.Theme.Deep:Lerp(Color3.new(1, 1, 1), 0.06), NeverLose.Theme.Deep)
-		end
-
-		local function onTrack()
-			return ColorSequence.new(NeverLose.AccentColor:Lerp(Color3.new(1, 1, 1), 0.35), NeverLose.AccentColor:Lerp(Color3.new(0, 0, 0), 0.2))
-		end
-
 		local ToggleLib = {
-			Root = Toggle
+			Root = Toggle	
 		};
 
 		ToggleLib.SetUI = LPH_NO_VIRTUALIZE(function(value)
 			if value then
-				TrackGradient.Color = onTrack()
 				NeverLose.PlayAnimate(Toggle,SlowyTween,{
-					BackgroundTransparency = 0
-				})
-				NeverLose.PlayAnimate(TrackStroke,SlowyTween,{
-					Transparency = 0.5
+					BackgroundTransparency = 0,
+					BackgroundColor3 = NeverLose.AccentColor
 				})
 
 				NeverLose.PlayAnimate(Circle,SlowyTween,{
@@ -2469,12 +2425,9 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 					Position = UDim2.new(0.7, 0, 0.5, 0)
 				})
 			else
-				TrackGradient.Color = offTrack()
 				NeverLose.PlayAnimate(Toggle,SlowyTween,{
-					BackgroundTransparency = 0
-				})
-				NeverLose.PlayAnimate(TrackStroke,SlowyTween,{
-					Transparency = 1
+					BackgroundTransparency = 0,
+					BackgroundColor3 = NeverLose.Theme.Deep
 				})
 
 				NeverLose.PlayAnimate(Circle,SlowyTween,{
@@ -2490,10 +2443,8 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 				ToggleLib.SetUI(Config.Default);
 			else
 				NeverLose.PlayAnimate(Toggle,SlowyTween,{
-					BackgroundTransparency = 1
-				})
-				NeverLose.PlayAnimate(TrackStroke,SlowyTween,{
-					Transparency = 1
+					BackgroundTransparency = 1,
+					BackgroundColor3 = NeverLose.Theme.Deep
 				})
 
 				NeverLose.PlayAnimate(Circle,SlowyTween,{
@@ -6463,126 +6414,6 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		return Lib;
 	end;
 
-	-- ЧЕКБОКС: квадратный бокс слева и текст справа от него. Без keybind: клавиша добавляется отдельным элементом,
-	-- например section:AddLabel('Name'):AddKeybind({ ... }) или section:AddKeybind({ ... }) (см. AddKeybind выше).
-	-- Параметры: Name, Default, Flag, Callback. Включённый бокс белый, без галочки.
-	function idx:AddCheckbox(Config)
-		Config = NeverLose:ProcessParams(Config , {
-			Name = 'Checkbox',
-			Default = false,
-			Flag = nil,
-			Callback = EmptyFunction,
-		});
-
-		local Z = LayerIndex;
-		local Lib = {};
-
-		local function make(class , props , parent)
-			local obj = Instance.new(class);
-
-			obj.Name = NeverLose.RandomString();
-
-			if obj:IsA('GuiObject') then
-				obj.BorderSizePixel = 0;
-				obj.BorderColor3 = Color3.fromRGB(0 , 0 , 0);
-			end;
-
-			for k , v in next , props do
-				obj[k] = v;
-			end;
-
-			obj.Parent = parent;
-
-			return obj;
-		end;
-
-		local Root = make('Frame' , {
-			BackgroundTransparency = 1,
-			Size = UDim2.new(1 , 0 , 0 , 30),
-			ZIndex = Z + 8,
-		} , Frame);
-
-		NeverLose:AddQuery(Root , Config.Name);
-
-		-- 1) бокс
-		local Box = make('Frame' , {
-			AnchorPoint = Vector2.new(0 , 0.5),
-			BackgroundColor3 = NeverLose.Theme.Deep,
-			Position = UDim2.new(0 , 11 , 0.5 , 0),
-			Size = UDim2.new(0 , 16 , 0 , 16),
-			ZIndex = Z + 10,
-		} , Root);
-		make('UICorner' , { CornerRadius = UDim.new(0 , 4) } , Box);
-		local BoxStroke = make('UIStroke' , { Color = NeverLose.Theme.Stroke , Transparency = 0.1 } , Box);
-
-		-- 2) текст справа от бокса
-		local NameLabel = make('TextLabel' , {
-			BackgroundTransparency = 1,
-			Position = UDim2.new(0 , 35 , 0 , 0),
-			Size = UDim2.new(1 , -46 , 1 , 0),
-			Font = Enum.Font.GothamMedium,
-			Text = Config.Name,
-			TextColor3 = NeverLose.Theme.Text,
-TextSize = 13,
-			TextTransparency = 0.12,
-			TextTruncate = Enum.TextTruncate.AtEnd,
-			TextXAlignment = Enum.TextXAlignment.Left,
-			ZIndex = Z + 9,
-		} , Root);
-
-		local function paint(value)
-			if value then
-				NeverLose.PlayAnimate(Box , SlowyTween , { BackgroundColor3 = NeverLose.Theme.Accent });
-				NeverLose.PlayAnimate(BoxStroke , SlowyTween , { Transparency = 1 });
-			else
-				NeverLose.PlayAnimate(Box , SlowyTween , { BackgroundColor3 = NeverLose.Theme.Deep });
-				NeverLose.PlayAnimate(BoxStroke , SlowyTween , { Color = NeverLose.Theme.Stroke , Transparency = 0.1 });
-			end;
-		end;
-
-		Config.Default = Config.Default and true or false;
-		paint(Config.Default);
-
-		NeverLose:CreateInput(Root , function()
-			Config.Default = not Config.Default;
-			paint(Config.Default);
-			Config.Callback(Config.Default);
-		end);
-
-		function Lib:GetValue()
-			return Config.Default;
-		end;
-
-		function Lib:SetValue(v)
-			Config.Default = v and true or false;
-			paint(Config.Default);
-			Config.Callback(Config.Default);
-		end;
-
-		function Lib:SetName(n)
-			Config.Name = n;
-			NameLabel.Text = n;
-		end;
-
-		function Lib:Destroy()
-			Root:Destroy();
-		end;
-
-		Root.Visible = Signel:GetValue() and true or false;
-
-		Signel:Connect(function(v)
-			Root.Visible = v and true or false;
-		end);
-
-		Lib.Root = Root;
-
-		if Config.Flag then
-			NeverLose.Flags[Config.Flag] = Lib;
-		end;
-
-		return Lib;
-	end;
-
 	-- выбор темы одним элементом: Section:AddThemeSelector({ Flag = 'Theme' })
 	-- тема применяется сразу, сохраняется в конфиг через Flag
 	function idx:AddThemeSelector(Config)
@@ -6923,8 +6754,6 @@ TextSize = 13,
 		return Box;
 	end;
 
-	NeverLose.CrewNames = NeverLose.CrewNames or {};
-
 	function idx:AddPlayerList(Config)
 		Config = NeverLose:ProcessParams(Config , {
 			Name = 'Playerlist',
@@ -7025,7 +6854,7 @@ TextSize = 13,
 		end;
 
 		headerLabel('Name' , 0 , 0.5);
-		headerLabel('Crew' , 0.5 , 0.25);
+		headerLabel('Team' , 0.5 , 0.25);
 		headerLabel('Priority' , 0.75 , 0.25);
 
 		make('Frame' , {
@@ -7131,64 +6960,8 @@ TextSize = 13,
 			return PriorityMap[tostring(player.UserId)] or 'Neutral';
 		end;
 
-		-- crew: ID из player.DataFolder.Information.Crew.Value, название из GroupService (кэш в NeverLose.CrewNames)
-		local GroupService = game:GetService('GroupService');
-		local CrewPending = {};
-		local refreshCrews = nil;
-
-		local function getCrewId(player)
-			local data = player and player:FindFirstChild('DataFolder');
-			local info = data and data:FindFirstChild('Information');
-			local crew = info and info:FindFirstChild('Crew');
-
-			if not crew or not crew:IsA('ValueBase') then
-				return nil;
-			end;
-
-			local id = tonumber(crew.Value);
-
-			if id and id > 0 then
-				return math.floor(id);
-			end;
-
-			return nil;
-		end;
-
-		local function requestCrew(id)
-			if NeverLose.CrewNames[id] or CrewPending[id] then
-				return;
-			end;
-
-			CrewPending[id] = true;
-
-			task.spawn(function()
-				local ok , info = pcall(GroupService.GetGroupInfoAsync , GroupService , id);
-
-				CrewPending[id] = nil;
-
-				-- если название не получили, показываем ID (чтобы не повторять запрос бесконечно)
-				NeverLose.CrewNames[id] = (ok and info and info.Name) or ('#' .. tostring(id));
-
-				if refreshCrews then
-					refreshCrews();
-				end;
-			end);
-		end;
-
-		local function getCrewText(player)
-			local id = getCrewId(player);
-
-			if not id then
-				return 'No crew';
-			end;
-
-			if NeverLose.CrewNames[id] then
-				return NeverLose.CrewNames[id];
-			end;
-
-			requestCrew(id);
-
-			return 'Loading...';
+		local function getTeamName(player)
+			return (player.Team and player.Team.Name) or 'None';
 		end;
 
 		local function priorityColor(name)
@@ -7208,24 +6981,8 @@ TextSize = 13,
 				return true;
 			end;
 
-			if string.find(string.lower(player.Name) , Search , 1 , true) ~= nil
-				or string.find(string.lower(player.DisplayName) , Search , 1 , true) ~= nil then
-				return true;
-			end;
-
-			local id = getCrewId(player);
-
-			if not id then
-				return false;
-			end;
-
-			if string.find(tostring(id) , Search , 1 , true) then
-				return true;
-			end;
-
-			local name = NeverLose.CrewNames[id];
-
-			return name ~= nil and string.find(string.lower(name) , Search , 1 , true) ~= nil;
+			return string.find(string.lower(player.Name) , Search , 1 , true) ~= nil
+				or string.find(string.lower(player.DisplayName) , Search , 1 , true) ~= nil;
 		end;
 
 		local Viewing = nil;
@@ -7259,7 +7016,7 @@ TextSize = 13,
 				Avatar.Image = '';
 				InfoName.Text = label('Name' , '-');
 				InfoPriority.Text = label('Priority' , '-');
-				InfoTeam.Text = label('Crew' , '-');
+				InfoTeam.Text = label('Team' , '-');
 				updateButtons();
 				return;
 			end;
@@ -7268,7 +7025,7 @@ TextSize = 13,
 
 			InfoName.Text = label('Name' , string.format('%s (%s)' , Selected.DisplayName , Selected.Name));
 			InfoPriority.Text = label('Priority' , colorTag(priorityColor(name) , name));
-			InfoTeam.Text = label('Crew' , getCrewText(Selected));
+			InfoTeam.Text = label('Team' , getTeamName(Selected));
 			Avatar.Image = Thumbs[Selected.UserId] or '';
 			updateButtons();
 		end;
@@ -7282,7 +7039,7 @@ TextSize = 13,
 
 			local name = getPriorityName(player);
 
-			row.Team.Text = getCrewText(player);
+			row.Team.Text = getTeamName(player);
 			row.Priority.Text = name;
 			row.Priority.TextColor3 = priorityColor(name);
 			row.Button.Visible = matchesSearch(player);
@@ -7319,23 +7076,6 @@ TextSize = 13,
 				BackgroundTransparency = (player == Selected) and 0.75 or 1,
 			});
 		end;
-
-		refreshCrews = function()
-			for player in next , Rows do
-				updateRow(player);
-			end;
-
-			if Selected then
-				updateInfo();
-			end;
-		end;
-
-		task.spawn(function()
-			while Container.Parent do
-				task.wait(1);
-				refreshCrews();
-			end;
-		end);
 
 		----------------------------------------------------------------- API
 		function PlayerList:GetSelected()
@@ -7599,7 +7339,7 @@ TextSize = 13,
 			local row = {
 				Button = Button,
 				Name = cell(0 , 0.5 , player.Name),
-				Team = cell(0.5 , 0.25 , getCrewText(player)),
+				Team = cell(0.5 , 0.25 , getTeamName(player)),
 				Priority = cell(0.75 , 0.25 , getPriorityName(player)),
 			};
 
@@ -7674,14 +7414,6 @@ TextSize = 13,
 
 		NeverLose:AddSignal(SearchBox:GetPropertyChangedSignal('Text'):Connect(function()
 			Search = string.lower(SearchBox.Text);
-
-			for player in next , Rows do
-				local id = getCrewId(player);
-
-				if id then
-					requestCrew(id);
-				end;
-			end;
 
 			for player in next , Rows do
 				updateRow(player);
@@ -7793,7 +7525,7 @@ function NeverLose:CreateWindow(Config)
 
 	local renderParentWindow = LPH_NO_VIRTUALIZE(function()
 		if Window.__3DRender then
-			if WindowFrame.BackgroundTransparency > 0.999 then
+			if WindowFrame.BackgroundTransparency > 0.9 then
 				WindowFrame.Visible = false;
 				WindowFrame.Parent = nil
 			else
@@ -7806,7 +7538,7 @@ function NeverLose:CreateWindow(Config)
 				WindowFrame.Parent = Window.SurfaceGui;
 			end;
 		else
-			if WindowFrame.BackgroundTransparency > 0.999 then
+			if WindowFrame.BackgroundTransparency > 0.9 then
 				WindowFrame.Visible = false;
 				WindowFrame.Parent = nil
 			else
@@ -7820,103 +7552,12 @@ function NeverLose:CreateWindow(Config)
 
 	NeverLose:AddSignal(WindowFrame:GetPropertyChangedSignal('BackgroundTransparency'):Connect(renderParentWindow))
 
-	-- все дочерние элементы окна гаснут и появляются одним твином вместе с окном
-	local FadeInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out);
-	local FadeProps = {
-		Frame = { 'BackgroundTransparency' },
-		ScrollingFrame = { 'BackgroundTransparency' },
-		TextLabel = { 'BackgroundTransparency' , 'TextTransparency' },
-		TextButton = { 'BackgroundTransparency' , 'TextTransparency' },
-		ImageLabel = { 'BackgroundTransparency' , 'ImageTransparency' },
-		ImageButton = { 'BackgroundTransparency' , 'ImageTransparency' },
-		UIStroke = { 'Transparency' },
-	};
-
-	local FadeSnap = nil;   -- значения элементов, когда окно полностью открыто
-	local FadeOpenAt = 0;   -- когда окно последний раз начало открываться
-	local Faded = false;    -- true, пока окно закрыто или закрывается
-
-	-- снимок значений по всем элементам окна (WindowFrame не трогаем: им управляет SetRender)
-	local function captureFade()
-		local snap = {};
-
-		for _ , obj in ipairs(WindowFrame:GetDescendants()) do
-			local props = FadeProps[obj.ClassName];
-
-			if props and obj ~= WindowFrame then
-				local v = {};
-
-				for _ , p in ipairs(props) do
-					v[p] = obj[p];
-				end;
-
-				snap[obj] = v;
-			end;
-		end;
-
-		return snap;
-	end;
-
-	local function windowFade(visible)
-		if visible then
-			if not Faded then
-				return;
-			end;
-
-			Faded = false;
-			FadeOpenAt = os.clock();
-
-			for obj , cache in next , FadeSnap or {} do
-				if obj.Parent then
-					local goal = {};
-
-					for p , v in next , cache do
-						goal[p] = v;
-					end;
-
-					NeverLose.PlayAnimate(obj , FadeInfo , goal);
-				end;
-			end;
-
-			return;
-		end;
-
-		if Faded then
-			return;
-		end;
-
-		-- снимок делаем только когда окно уже открылось полностью, иначе берём прошлый
-		if (not FadeSnap) or (os.clock() - FadeOpenAt >= 0.4) then
-			FadeSnap = captureFade();
-		end;
-
-		Faded = true;
-
-		for _ , obj in ipairs(WindowFrame:GetDescendants()) do
-			local props = FadeProps[obj.ClassName];
-
-			if props and obj ~= WindowFrame then
-				local goal = {};
-
-				for _ , p in ipairs(props) do
-					goal[p] = 1;
-				end;
-
-				NeverLose.PlayAnimate(obj , FadeInfo , goal);
-			end;
-		end;
-	end;
-
 	Window.SetRender = LPH_NO_VIRTUALIZE(function(self , value)
-		windowFade(value);
 		if value then
 			NeverLose.PlayAnimate(WindowFrame , SlowyTween , {
-				BackgroundTransparency = (NeverLose.EnabledBlur and 0.055) or 0.0255
+				BackgroundTransparency = (NeverLose.EnabledBlur and 0.055) or 0.0255,
+				Size = Window.Size
 			})
-
-			for _ , h in ipairs(Window.HeaderBgs or {}) do
-				NeverLose.PlayAnimate(h , SlowyTween , { BackgroundTransparency = (NeverLose.EnabledBlur and 0.055) or 0.0255 })
-			end;
 
 			NeverLose.PlayAnimate(LogoImage , SlowyTween , {
 				ImageTransparency = 0
@@ -7959,7 +7600,7 @@ function NeverLose:CreateWindow(Config)
 			})
 
 			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
-				Transparency = 1.000
+				Transparency = 0.650
 			})
 
 			NeverLose.PlayAnimate(LineFrame_3 , SlowyTween , {
@@ -7971,7 +7612,7 @@ function NeverLose:CreateWindow(Config)
 			})
 
 			NeverLose.PlayAnimate(UIStroke_2 , SlowyTween , {
-				Transparency = 1.000
+				Transparency = 0.650
 			})
 
 			NeverLose.PlayAnimate(ConfigIcon , SlowyTween , {
@@ -7998,16 +7639,13 @@ function NeverLose:CreateWindow(Config)
 				TextTransparency = 0.350
 			})
 
-			Window.Shadow:Render(false);
+			Window.Shadow:Render(true);
 		else
 
 			NeverLose.PlayAnimate(WindowFrame , SlowyTween , {
-				BackgroundTransparency = 1
+				BackgroundTransparency = 1,
+				Size = Window.Size + UDim2.fromOffset(-15,-15)
 			})
-
-			for _ , h in ipairs(Window.HeaderBgs or {}) do
-				NeverLose.PlayAnimate(h , SlowyTween , { BackgroundTransparency = 1 })
-			end;
 
 			NeverLose.PlayAnimate(LogoImage , SlowyTween , {
 				ImageTransparency = 1
@@ -8122,7 +7760,6 @@ function NeverLose:CreateWindow(Config)
 		NeverLose.Drag(Frame , WindowFrame , 0.15)
 	end
 
-	UICorner.CornerRadius = UDim.new(0, 12);
 	UICorner.Parent = WindowFrame
 
 	LeftMenuFrame.Name = NeverLose.RandomString();
@@ -8224,6 +7861,7 @@ function NeverLose:CreateWindow(Config)
 
 	BottomFrame.Name = NeverLose.RandomString();
 	BottomFrame.Parent = LeftMenuFrame
+	BottomFrame.Visible = false;
 	BottomFrame.AnchorPoint = Vector2.new(0, 1)
 	BottomFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	BottomFrame.BackgroundTransparency = 1.000
@@ -8326,50 +7964,11 @@ function NeverLose:CreateWindow(Config)
 	RightMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	RightMenuFrame.BorderSizePixel = 0
 	RightMenuFrame.ClipsDescendants = true
-	-- ===== верхняя панель: название в шапке, пользователь справа, вкладки в один ряд под шапкой =====
-	LeftMenuFrame.BackgroundTransparency = 1;
-
-	local HeaderBg = Instance.new("Frame");
-	local HeaderBgCorner = Instance.new("UICorner");
-	local HeaderBgSquare = Instance.new("Frame");
-
-	HeaderBg.Name = NeverLose.RandomString();
-	HeaderBg.BackgroundColor3 = Color3.fromRGB(16, 16, 24);
-	HeaderBg.BorderSizePixel = 0;
-	HeaderBg.Size = UDim2.new(1, 0, 0, 32);
-	HeaderBg.ZIndex = 0;
-	HeaderBgCorner.CornerRadius = UDim.new(0, 12);
-	HeaderBgCorner.Parent = HeaderBg;
-
-	HeaderBgSquare.Name = NeverLose.RandomString();
-	HeaderBgSquare.BackgroundColor3 = Color3.fromRGB(16, 16, 24);
-	HeaderBgSquare.BorderSizePixel = 0;
-	HeaderBgSquare.Position = UDim2.new(0, 0, 0, 22);
-	HeaderBgSquare.Size = UDim2.new(1, 0, 0, 10);
-	HeaderBgSquare.ZIndex = 0;
-
-	Window.HeaderBgs = { HeaderBg, HeaderBgSquare };
-	HeadFrame.Size = UDim2.new(0, 260, 1, 0);
-	WindowContent.Visible = false;
-	LineFrame.Visible = false;
-
-	BottomFrame.AnchorPoint = Vector2.new(1, 0);
-	BottomFrame.Position = UDim2.new(1, -12, 0, 0);
-	BottomFrame.Size = UDim2.new(0, 220, 1, 0);
-
-	LeftScrollingFrame.AnchorPoint = Vector2.new(0, 0);
-
-	RightMenuFrame.Position = UDim2.new(0, 175, 0, 0);
-	RightMenuFrame.Size = UDim2.new(1, -175, 1, 0);
-
-	-- убираем логотип, профиль и строку конфига с поиском
-	LogoImage.Visible = false;
-	WindowName.Position = UDim2.new(0, 16, 0, 3);
-	BottomFrame.Visible = false;
-	RightHeader.Visible = false;
+	RightMenuFrame.Position = UDim2.new(0, 176, 0, 0)
+	RightMenuFrame.Size = UDim2.new(1, -176, 1, 0)
 	RightMenuFrame.ZIndex = 8
 
-	UIStroke.Transparency = 1.000
+	UIStroke.Transparency = 0.650
 	UIStroke.Color = NeverLose.Theme.Stroke
 	UIStroke.Parent = RightMenuFrame
 
@@ -8378,6 +7977,7 @@ function NeverLose:CreateWindow(Config)
 
 	RightHeader.Name = NeverLose.RandomString();
 	RightHeader.Parent = RightMenuFrame
+	RightHeader.Visible = false;
 	RightHeader.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 	RightHeader.BackgroundTransparency = 1.000
 	RightHeader.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -8529,8 +8129,8 @@ function NeverLose:CreateWindow(Config)
 	TabContainer.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	TabContainer.BorderSizePixel = 0
 	TabContainer.ClipsDescendants = true
-	TabContainer.Position = UDim2.new(0, 0, 0, 0)
-	TabContainer.Size = UDim2.new(1, 0, 1, 0)
+	TabContainer.Position = UDim2.new(0, 0, 0, 50)
+	TabContainer.Size = UDim2.new(1, 0, 1, -50)
 	TabContainer.ZIndex = 5
 
 	do
@@ -8702,7 +8302,6 @@ function NeverLose:CreateWindow(Config)
 		TabLabel.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabLabel.BorderSizePixel = 0
 		TabLabel.Size = UDim2.new(1, -7, 0, 15)
-		TabLabel.Visible = false;
 		TabLabel.ZIndex = 8
 		TabLabel.Font = Enum.Font.GothamMedium
 		TabLabel.Text = Name
@@ -8789,10 +8388,6 @@ function NeverLose:CreateWindow(Config)
 		TabContentLabel.TextColor3 = NeverLose.Theme.Text
 		TabContentLabel.TextSize = 12.000
 		TabContentLabel.TextXAlignment = Enum.TextXAlignment.Left
-		-- верхняя панель: кнопка вкладки по ширине текста, вкладки в один ряд
-		local TabTextW = NeverLose.GetTextSize(Config.Name , 12 , Enum.Font.GothamMedium , Vector2.new(math.huge , math.huge)).X;
-		TabButton.Size = UDim2.new(0 , math.max(TabTextW + 44 , 70) , 0 , 30);
-		TabContentLabel.Size = UDim2.new(0 , TabTextW + 6 , 0 , 15);
 
 		local TabFrame = Instance.new("Frame")
 		local LeftScroll = Instance.new("ScrollingFrame")
@@ -9038,8 +8633,16 @@ function NeverLose:CreateWindow(Config)
 		function Tab:AddSection(Config)
 			Config = NeverLose:ProcessParams(Config , {
 				Name = "SECTION",
-				Position = 'left'
+				Position = 'left',
+				Collapsible = false, -- подпись становится кнопкой сворачивания
+				Collapsed = false,   -- стартовать свёрнутой (только при Collapsible = true)
+				Flag = nil,          -- сохранять свёрнутость в конфиг
+				Style = nil          -- 'Inside' (название внутри карточки, по умолчанию) | 'Classic' (подпись над карточкой)
 			});
+
+			local Collapsed = (Config.Collapsible == true) and (Config.Collapsed == true);
+			local Inside = string.lower(tostring(Config.Style or NeverLose.SectionStyle or 'Inside')) ~= 'classic';
+			local HeaderH = 30;
 
 			local SectionFrame = Instance.new("Frame")
 			local SectionLabel = Instance.new("TextLabel")
@@ -9051,6 +8654,12 @@ function NeverLose:CreateWindow(Config)
 			SectionFrame.Name = NeverLose.RandomString();
 			local SectionPos = string.lower(Config.Position);
 			SectionFrame.Parent = (SectionPos == 'full' and TopFrame) or (SectionPos == 'left' and LeftScroll) or RightScroll
+
+			if SectionPos ~= 'full' then
+				SideCount += 1;
+			end;
+
+			Relayout();
 			SectionFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			SectionFrame.BackgroundTransparency = 1.000
 			SectionFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
@@ -9071,7 +8680,7 @@ function NeverLose:CreateWindow(Config)
 			SectionLabel.ZIndex = 9
 			SectionLabel.Font = Enum.Font.GothamMedium
 			SectionLabel.Text = Config.Name
-			SectionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			SectionLabel.TextColor3 = NeverLose.Theme.Text
 			SectionLabel.TextSize = 11.000
 			SectionLabel.TextTransparency = 0.500
 			SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -9079,7 +8688,7 @@ function NeverLose:CreateWindow(Config)
 			SectionHandler.Name = NeverLose.RandomString();
 			SectionHandler.Parent = SectionFrame
 			SectionHandler.AnchorPoint = Vector2.new(0.5, 0)
-			SectionHandler.BackgroundColor3 = Color3.fromRGB(20, 22, 27)
+			SectionHandler.BackgroundColor3 = NeverLose.Theme.Card
 			SectionHandler.BackgroundTransparency = 0.500
 			SectionHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 			SectionHandler.BorderSizePixel = 0
@@ -9089,7 +8698,7 @@ function NeverLose:CreateWindow(Config)
 			SectionHandler.ZIndex = 9
 
 			UIStroke.Transparency = 0.650
-			UIStroke.Color = Color3.fromRGB(45, 48, 58)
+			UIStroke.Color = NeverLose.Theme.Stroke
 			UIStroke.Parent = SectionHandler
 
 			UICorner.CornerRadius = UDim.new(0, 10)
@@ -9099,21 +8708,188 @@ function NeverLose:CreateWindow(Config)
 			UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 			UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
-			UIListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(LPH_NO_VIRTUALIZE(function()
+			-- стиль Inside: название секции лежит внутри карточки на светлой полосе-заголовке
+			local Header , Band , TitleLabel = nil , nil , nil;
 
+			if Inside then
+				SectionLabel.Visible = false;
+				SectionHandler.Position = UDim2.new(0.5, 0, 0, 0);
+				SectionHandler.Size = UDim2.new(1, -10, 1, 0);
 
-				if UIListLayout.AbsoluteContentSize.Y <= 1 then
+				Header = Instance.new("Frame");
+				Header.Name = NeverLose.RandomString();
+				Header.Parent = SectionHandler;
+				Header.BackgroundTransparency = 1.000;
+				Header.BorderSizePixel = 0;
+				Header.ClipsDescendants = true;
+				Header.LayoutOrder = -100000;
+				Header.Size = UDim2.new(1, 0, 0, HeaderH);
+				Header.ZIndex = 10;
+
+				-- полоса выше заголовка на 10px: нижние скругления обрезаются, остаются скруглённые верхние углы карточки
+				Band = Instance.new("Frame");
+				Band.Name = NeverLose.RandomString();
+				Band.Parent = Header;
+				Band.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+				Band.BackgroundTransparency = 0.955;
+				Band.BorderSizePixel = 0;
+				Band.Size = UDim2.new(1, 0, 0, Collapsed and HeaderH or (HeaderH + 10));
+				Band.ZIndex = 10;
+
+				local BandCorner = Instance.new("UICorner");
+				BandCorner.CornerRadius = UDim.new(0, 10);
+				BandCorner.Parent = Band;
+
+				TitleLabel = Instance.new("TextLabel");
+				TitleLabel.Name = NeverLose.RandomString();
+				TitleLabel.Parent = Header;
+				TitleLabel.BackgroundTransparency = 1.000;
+				TitleLabel.BorderSizePixel = 0;
+				TitleLabel.Position = UDim2.new(0, 11, 0, 0);
+				TitleLabel.Size = UDim2.new(1, -40, 1, 0);
+				TitleLabel.ZIndex = 11;
+				TitleLabel.Font = Enum.Font.GothamMedium;
+				TitleLabel.Text = Config.Name;
+				TitleLabel.TextColor3 = NeverLose.Theme.Text;
+				TitleLabel.TextSize = 12.000;
+				TitleLabel.TextTransparency = 0.100;
+				TitleLabel.TextTruncate = Enum.TextTruncate.AtEnd;
+				TitleLabel.TextXAlignment = Enum.TextXAlignment.Left;
+			end;
+
+			local function ApplySectionSize()
+				local contentY = UIListLayout.AbsoluteContentSize.Y;
+				local emptyY = Inside and (HeaderH + 1) or 1;
+
+				if contentY <= emptyY then
 					NeverLose.PlayAnimate(SectionFrame , VSlowTween , {
 						Size = UDim2.new(1, -5, 0, 0)
 					})
+				elseif Collapsed then
+					NeverLose.PlayAnimate(SectionFrame , VSlowTween , {
+						Size = UDim2.new(1, -5, 0, Inside and (HeaderH + 1) or 18) -- виден только заголовок
+					})
 				else
 					NeverLose.PlayAnimate(SectionFrame , VSlowTween , {
-						Size = UDim2.new(1, -5, 0, UIListLayout.AbsoluteContentSize.Y + 19.5)
+						Size = UDim2.new(1, -5, 0, Inside and (contentY + 1) or (contentY + 19.5))
 					})
 				end;
-			end));
+			end;
+
+			UIListLayout:GetPropertyChangedSignal('AbsoluteContentSize'):Connect(LPH_NO_VIRTUALIZE(ApplySectionSize));
 
 			local Section = NeverLose:RegisiterItem(SectionHandler , Tab.Signal);
+
+			function Section:IsCollapsed()
+				return Collapsed;
+			end;
+
+			local Chevron = nil;
+
+			local function Fade(v)
+				if Chevron then
+					NeverLose.PlayAnimate(Chevron , SlowyTween , { TextTransparency = v and 0.3 or 1 });
+				end;
+
+				if Inside then
+					NeverLose.PlayAnimate(TitleLabel , SlowyTween , { TextTransparency = v and 0.1 or 1 });
+					NeverLose.PlayAnimate(Band , SlowyTween , { BackgroundTransparency = v and 0.955 or 1 });
+				end;
+			end;
+
+			if Config.Collapsible then
+				local CapButton = Instance.new("TextButton")
+
+				Chevron = Instance.new("TextLabel")
+				Chevron.Name = NeverLose.RandomString();
+				Chevron.Parent = Inside and Header or SectionFrame
+				Chevron.AnchorPoint = Vector2.new(1, 0.5)
+				Chevron.BackgroundTransparency = 1.000
+				Chevron.BorderSizePixel = 0
+				Chevron.Position = Inside and UDim2.new(1, -9, 0.5, 0) or UDim2.new(1, -9, 0, 7)
+				Chevron.Size = UDim2.new(0, 16, 0, 16)
+				Chevron.ZIndex = 12
+				Chevron.FontFace = NeverLose.BuiltInBold
+				Chevron.Text = 'chevron-small-down'
+				Chevron.TextColor3 = NeverLose.Theme.Text
+				Chevron.TextSize = 16.000
+				Chevron.TextTransparency = 0.300
+				Chevron.Rotation = Collapsed and -90 or 0
+
+				-- невидимая кнопка на всю строку заголовка
+				CapButton.Name = NeverLose.RandomString();
+				CapButton.Parent = Inside and Header or SectionFrame
+				CapButton.AutoButtonColor = false
+				CapButton.BackgroundTransparency = 1.000
+				CapButton.BorderSizePixel = 0
+				CapButton.Position = UDim2.new(0, 0, 0, 0)
+				CapButton.Size = Inside and UDim2.new(1, 0, 1, 0) or UDim2.new(1, 0, 0, 17)
+				CapButton.ZIndex = 13
+				CapButton.Text = ''
+
+				local function SetCollapsed(v)
+					v = v and true or false;
+
+					if v == Collapsed then
+						return;
+					end;
+
+					Collapsed = v;
+
+					NeverLose.PlayAnimate(Chevron , SlowyTween , {
+						Rotation = v and -90 or 0
+					});
+
+					if Inside then
+						-- свёрнуто: полоса скругляется со всех сторон, чтобы не торчать из углов карточки
+						NeverLose.PlayAnimate(Band , SlowyTween , {
+							Size = UDim2.new(1, 0, 0, v and HeaderH or (HeaderH + 10))
+						});
+					end;
+
+					ApplySectionSize();
+				end;
+
+				function Section:Collapse()
+					SetCollapsed(true);
+				end;
+
+				function Section:Expand()
+					SetCollapsed(false);
+				end;
+
+				function Section:Toggle()
+					SetCollapsed(not Collapsed);
+				end;
+
+				NeverLose:AddSignal(CapButton.Activated:Connect(function()
+					SetCollapsed(not Collapsed);
+				end));
+
+				NeverLose:AddSignal(CapButton.MouseEnter:Connect(function()
+					NeverLose.PlayAnimate(Chevron , SlowyTween , { TextTransparency = 0.05 });
+				end));
+
+				NeverLose:AddSignal(CapButton.MouseLeave:Connect(function()
+					NeverLose.PlayAnimate(Chevron , SlowyTween , { TextTransparency = 0.3 });
+				end));
+
+				if Config.Flag then
+					NeverLose.Flags[Config.Flag] = {
+						GetValue = function()
+							return Collapsed;
+						end,
+						SetValue = function(_ , v)
+							SetCollapsed(v);
+						end,
+					};
+				end;
+			end;
+
+			if Inside or Config.Collapsible then
+				Tab.Signal:Connect(Fade);
+				Fade(Tab.Signal:GetValue());
+			end;
 
 			Section.SetRender = LPH_NO_VIRTUALIZE(function(value)
 				if value then
