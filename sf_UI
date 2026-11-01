@@ -6414,6 +6414,126 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		return Lib;
 	end;
 
+	-- ЧЕКБОКС: квадратный бокс слева и текст справа от него. Без keybind: клавиша добавляется отдельным элементом,
+	-- например section:AddLabel('Name'):AddKeybind({ ... }) или section:AddKeybind({ ... }) (см. AddKeybind выше).
+	-- Параметры: Name, Default, Flag, Callback. Включённый бокс белый, без галочки.
+	function idx:AddCheckbox(Config)
+		Config = NeverLose:ProcessParams(Config , {
+			Name = 'Checkbox',
+			Default = false,
+			Flag = nil,
+			Callback = EmptyFunction,
+		});
+
+		local Z = LayerIndex;
+		local Lib = {};
+
+		local function make(class , props , parent)
+			local obj = Instance.new(class);
+
+			obj.Name = NeverLose.RandomString();
+
+			if obj:IsA('GuiObject') then
+				obj.BorderSizePixel = 0;
+				obj.BorderColor3 = Color3.fromRGB(0 , 0 , 0);
+			end;
+
+			for k , v in next , props do
+				obj[k] = v;
+			end;
+
+			obj.Parent = parent;
+
+			return obj;
+		end;
+
+		local Root = make('Frame' , {
+			BackgroundTransparency = 1,
+			Size = UDim2.new(1 , 0 , 0 , 30),
+			ZIndex = Z + 8,
+		} , Frame);
+
+		NeverLose:AddQuery(Root , Config.Name);
+
+		-- 1) бокс
+		local Box = make('Frame' , {
+			AnchorPoint = Vector2.new(0 , 0.5),
+			BackgroundColor3 = NeverLose.Theme.Deep,
+			Position = UDim2.new(0 , 11 , 0.5 , 0),
+			Size = UDim2.new(0 , 16 , 0 , 16),
+			ZIndex = Z + 10,
+		} , Root);
+		make('UICorner' , { CornerRadius = UDim.new(0 , 4) } , Box);
+		local BoxStroke = make('UIStroke' , { Color = NeverLose.Theme.Stroke , Transparency = 0.1 } , Box);
+
+		-- 2) текст справа от бокса
+		local NameLabel = make('TextLabel' , {
+			BackgroundTransparency = 1,
+			Position = UDim2.new(0 , 35 , 0 , 0),
+			Size = UDim2.new(1 , -46 , 1 , 0),
+			Font = Enum.Font.GothamMedium,
+			Text = Config.Name,
+			TextColor3 = NeverLose.Theme.Text,
+			TextSize = 13,
+			TextTransparency = 0.3,
+			TextTruncate = Enum.TextTruncate.AtEnd,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			ZIndex = Z + 9,
+		} , Root);
+
+		local function paint(value)
+			if value then
+				NeverLose.PlayAnimate(Box , SlowyTween , { BackgroundColor3 = Color3.fromRGB(240 , 240 , 245) });
+				NeverLose.PlayAnimate(BoxStroke , SlowyTween , { Transparency = 1 });
+			else
+				NeverLose.PlayAnimate(Box , SlowyTween , { BackgroundColor3 = NeverLose.Theme.Deep });
+				NeverLose.PlayAnimate(BoxStroke , SlowyTween , { Color = NeverLose.Theme.Stroke , Transparency = 0.1 });
+			end;
+		end;
+
+		Config.Default = Config.Default and true or false;
+		paint(Config.Default);
+
+		NeverLose:CreateInput(Root , function()
+			Config.Default = not Config.Default;
+			paint(Config.Default);
+			Config.Callback(Config.Default);
+		end);
+
+		function Lib:GetValue()
+			return Config.Default;
+		end;
+
+		function Lib:SetValue(v)
+			Config.Default = v and true or false;
+			paint(Config.Default);
+			Config.Callback(Config.Default);
+		end;
+
+		function Lib:SetName(n)
+			Config.Name = n;
+			NameLabel.Text = n;
+		end;
+
+		function Lib:Destroy()
+			Root:Destroy();
+		end;
+
+		Root.Visible = Signel:GetValue() and true or false;
+
+		Signel:Connect(function(v)
+			Root.Visible = v and true or false;
+		end);
+
+		Lib.Root = Root;
+
+		if Config.Flag then
+			NeverLose.Flags[Config.Flag] = Lib;
+		end;
+
+		return Lib;
+	end;
+
 	-- выбор темы одним элементом: Section:AddThemeSelector({ Flag = 'Theme' })
 	-- тема применяется сразу, сохраняется в конфиг через Flag
 	function idx:AddThemeSelector(Config)
