@@ -7820,8 +7820,11 @@ function NeverLose:CreateWindow(Config)
 
 	NeverLose:AddSignal(WindowFrame:GetPropertyChangedSignal('BackgroundTransparency'):Connect(renderParentWindow))
 
-	-- все дочерние элементы окна гаснут и появляются одним твином вместе с окном
-	local FadeInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out);
+	-- твин затухания окна ДОЛЖЕН быть идентичен SlowyTween (тот, которым гаснут
+	-- все элементы контента в своих SetRender): одинаковые длительность/кривая/цель
+	-- гарантируют, что даже при двух competing-твинах на одном свойстве
+	-- шапка и контент исчезают/появляются строго одновременно
+	local FadeInfo = SlowyTween;
 	local FadeProps = {
 		Frame = { 'BackgroundTransparency' },
 		ScrollingFrame = { 'BackgroundTransparency' },
@@ -8763,6 +8766,13 @@ function NeverLose:CreateWindow(Config)
 		NeverLose:AddSignal(TabFrame:GetPropertyChangedSignal('AbsoluteSize'):Connect(LPH_NO_VIRTUALIZE(Relayout)))
 
 		NeverLose:AddSignal(TabIcon:GetPropertyChangedSignal('TextTransparency'):Connect(LPH_NO_VIRTUALIZE(function()
+			-- пока окно закрыто/закрывается: страницы НЕ отцепляем,
+			-- иначе контент пропадает мгновенным рывком, а шапка гаснет дальше твином
+			-- (ровно тот эффект 'закрывается по частям')
+			if Window.Signal and not Window.Signal:GetValue() then
+				return;
+			end;
+
 			if TabIcon.TextTransparency > 0.4 then
 				UIListLayout.Parent = nil;
 				UIListLayout_2.Parent = nil;
