@@ -8615,7 +8615,7 @@ function NeverLose:CreateWindow(Config)
 		TabButton.Name = NeverLose.RandomString();
 		TabButton.Parent = LeftScrollingFrame
 		TabButton.BackgroundColor3 = NeverLose.Theme.Hover
-		TabButton.BackgroundTransparency = 0.45
+		TabButton.BackgroundTransparency = 0.620
 		TabButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabButton.BorderSizePixel = 0
 		TabButton.Size = UDim2.new(1, -1, 0, 30)
@@ -8623,6 +8623,25 @@ function NeverLose:CreateWindow(Config)
 
 		UICorner.CornerRadius = UDim.new(0, 9)
 		UICorner.Parent = TabButton
+
+		-- внешний контур пилюли обычным фреймом (UIStroke внутри скролл-контейнера рендерится криво):
+		-- рамка на 1px больше пилюли, рисуется ПОД заливкой (ZIndex ниже), своя скруглённость
+		local TabOutline = Instance.new("Frame")
+		TabOutline.Name = NeverLose.RandomString();
+		TabOutline.AnchorPoint = Vector2.new(0.5, 0.5)
+		TabOutline.Position = UDim2.new(0.5, 0, 0.5, 0)
+		TabOutline.Size = UDim2.new(1, 2, 1, 2)
+		TabOutline.BackgroundTransparency = 1
+		TabOutline.BorderSizePixel = 0
+		TabOutline.ZIndex = TabButton.ZIndex - 1
+		TabOutline.Parent = TabButton
+
+		local TabOutlineCorner = Instance.new("UICorner")
+		TabOutlineCorner.CornerRadius = UDim.new(0, 10)
+		TabOutlineCorner.Parent = TabOutline
+
+		NeverLose:BindTheme(TabOutline , 'BackgroundColor3' , 'Stroke');
+		TabOutline.BackgroundColor3 = NeverLose.Theme.Stroke
 
 		TabIcon.Name = NeverLose.RandomString();
 		TabIcon.Parent = TabButton
@@ -8814,7 +8833,11 @@ function NeverLose:CreateWindow(Config)
 
 			if value then
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
-					BackgroundTransparency = 0.45
+					BackgroundTransparency = 0.620
+				})
+
+				NeverLose.PlayAnimate(TabOutline , SlowyTween , {
+					BackgroundTransparency = 0.4
 				})
 
 				NeverLose.PlayAnimate(TabIcon , SlowyTween , {
@@ -8827,6 +8850,10 @@ function NeverLose:CreateWindow(Config)
 				})
 			else
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
+					BackgroundTransparency = 1
+				})
+
+				NeverLose.PlayAnimate(TabOutline , SlowyTween , {
 					BackgroundTransparency = 1
 				})
 
@@ -8863,7 +8890,7 @@ function NeverLose:CreateWindow(Config)
 		NeverLose:AddSignal(over.MouseEnter:Connect(LPH_NO_VIRTUALIZE(function()
 			if Window.Tabs[Window.CurrentTab] == Tab then
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
-					BackgroundTransparency = 0.45
+					BackgroundTransparency = 0.620
 				})
 			else
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
@@ -8875,7 +8902,7 @@ function NeverLose:CreateWindow(Config)
 		NeverLose:AddSignal(over.MouseLeave:Connect(LPH_NO_VIRTUALIZE(function()
 			if Window.Tabs[Window.CurrentTab] == Tab then
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
-					BackgroundTransparency = 0.45
+					BackgroundTransparency = 0.620
 				})
 			else
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
