@@ -7701,6 +7701,7 @@ function NeverLose:CreateWindow(Config)
 	};
 
 	NeverLose.GlobalLogo = Window.Logo;
+	NeverLose.CurrentWindow = Window;
 
 	local Logging = NeverLose:CreateLogger();
 	if not isfolder(Window.ConfigFolder) then
@@ -7745,7 +7746,7 @@ function NeverLose:CreateWindow(Config)
 	WindowFrame.Name = NeverLose.RandomString();
 	WindowFrame.Parent = NeverLose.ScreenGui;
 	WindowFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-	WindowFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 13)
+	WindowFrame.BackgroundColor3 = NeverLose.Theme.Main
 	WindowFrame.BackgroundTransparency = 0.055
 	WindowFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	WindowFrame.BorderSizePixel = 0
@@ -7790,9 +7791,12 @@ function NeverLose:CreateWindow(Config)
 	Window.SetRender = LPH_NO_VIRTUALIZE(function(self , value)
 		if value then
 			NeverLose.PlayAnimate(WindowFrame , SlowyTween , {
-				BackgroundTransparency = (NeverLose.EnabledBlur and 0.055) or 0.0255,
-				Size = Window.Size
+				BackgroundTransparency = (NeverLose.EnabledBlur and 0.055) or 0.0255
 			})
+
+			for _ , h in ipairs(Window.HeaderBgs or {}) do
+				NeverLose.PlayAnimate(h , SlowyTween , { BackgroundTransparency = (NeverLose.EnabledBlur and 0.055) or 0.0255 })
+			end;
 
 			NeverLose.PlayAnimate(LogoImage , SlowyTween , {
 				ImageTransparency = 0
@@ -7835,7 +7839,7 @@ function NeverLose:CreateWindow(Config)
 			})
 
 			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
-				Transparency = 0.650
+				Transparency = 1.000
 			})
 
 			NeverLose.PlayAnimate(LineFrame_3 , SlowyTween , {
@@ -7847,7 +7851,7 @@ function NeverLose:CreateWindow(Config)
 			})
 
 			NeverLose.PlayAnimate(UIStroke_2 , SlowyTween , {
-				Transparency = 0.650
+				Transparency = 1.000
 			})
 
 			NeverLose.PlayAnimate(ConfigIcon , SlowyTween , {
@@ -7874,13 +7878,16 @@ function NeverLose:CreateWindow(Config)
 				TextTransparency = 0.350
 			})
 
-			Window.Shadow:Render(true);
+			Window.Shadow:Render(false);
 		else
 
 			NeverLose.PlayAnimate(WindowFrame , SlowyTween , {
-				BackgroundTransparency = 1,
-				Size = Window.Size + UDim2.fromOffset(-15,-15)
+				BackgroundTransparency = 1
 			})
+
+			for _ , h in ipairs(Window.HeaderBgs or {}) do
+				NeverLose.PlayAnimate(h , SlowyTween , { BackgroundTransparency = 1 })
+			end;
 
 			NeverLose.PlayAnimate(LogoImage , SlowyTween , {
 				ImageTransparency = 1
@@ -7995,6 +8002,7 @@ function NeverLose:CreateWindow(Config)
 		NeverLose.Drag(Frame , WindowFrame , 0.15)
 	end
 
+	UICorner.CornerRadius = UDim.new(0, 12);
 	UICorner.Parent = WindowFrame
 
 	LeftMenuFrame.Name = NeverLose.RandomString();
@@ -8041,7 +8049,7 @@ function NeverLose:CreateWindow(Config)
 	WindowName.ZIndex = 7
 	WindowName.Font = Enum.Font.GothamBold
 	WindowName.Text = Window.Name
-	WindowName.TextColor3 = Color3.fromRGB(255, 255, 255)
+	WindowName.TextColor3 = NeverLose.Theme.Text
 	WindowName.TextSize = 18.000
 	WindowName.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -8056,7 +8064,7 @@ function NeverLose:CreateWindow(Config)
 	WindowContent.ZIndex = 7
 	WindowContent.Font = Enum.Font.GothamBold
 	WindowContent.Text = Window.Content
-	WindowContent.TextColor3 = Color3.fromRGB(255, 255, 255)
+	WindowContent.TextColor3 = NeverLose.Theme.Text
 	WindowContent.TextSize = 9.000
 	WindowContent.TextTransparency = 0.650
 	WindowContent.TextXAlignment = Enum.TextXAlignment.Left
@@ -8064,7 +8072,7 @@ function NeverLose:CreateWindow(Config)
 	LineFrame.Name = NeverLose.RandomString();
 	LineFrame.Parent = HeadFrame
 	LineFrame.AnchorPoint = Vector2.new(0.5, 1)
-	LineFrame.BackgroundColor3 = Color3.fromRGB(45, 48, 58)
+	LineFrame.BackgroundColor3 = NeverLose.Theme.Stroke
 	LineFrame.BackgroundTransparency = 0.650
 	LineFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	LineFrame.BorderSizePixel = 0
@@ -8131,7 +8139,7 @@ function NeverLose:CreateWindow(Config)
 	AccountName.ZIndex = 7
 	AccountName.Font = Enum.Font.GothamBold
 	AccountName.Text = ""
-	AccountName.TextColor3 = Color3.fromRGB(255, 255, 255)
+	AccountName.TextColor3 = NeverLose.Theme.Text
 	AccountName.TextSize = 14.000
 	AccountName.TextXAlignment = Enum.TextXAlignment.Left
 	AccountName.TextTruncate = Enum.TextTruncate.SplitWord;
@@ -8147,7 +8155,7 @@ function NeverLose:CreateWindow(Config)
 	ExpireLabel.ZIndex = 7
 	ExpireLabel.Font = Enum.Font.GothamBold
 	ExpireLabel.Text = "never"
-	ExpireLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+	ExpireLabel.TextColor3 = NeverLose.Theme.Text
 	ExpireLabel.TextSize = 10.000
 	ExpireLabel.TextTransparency = 0.650
 	ExpireLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -8155,7 +8163,7 @@ function NeverLose:CreateWindow(Config)
 	LineFrame_2.Name = NeverLose.RandomString();
 	LineFrame_2.Parent = BottomFrame
 	LineFrame_2.AnchorPoint = Vector2.new(0.5, 0)
-	LineFrame_2.BackgroundColor3 = Color3.fromRGB(45, 48, 58)
+	LineFrame_2.BackgroundColor3 = NeverLose.Theme.Stroke
 	LineFrame_2.BackgroundTransparency = 0.650
 	LineFrame_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	LineFrame_2.BorderSizePixel = 0
@@ -8175,7 +8183,7 @@ function NeverLose:CreateWindow(Config)
 	UserSettingButton.ZIndex = 7
 	UserSettingButton.FontFace = NeverLose.BuiltInBold
 	UserSettingButton.Text = "chevron-large-right"
-	UserSettingButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+	UserSettingButton.TextColor3 = NeverLose.Theme.Text
 	UserSettingButton.TextSize = 13.000
 	UserSettingButton.TextTransparency = 0.5
 
@@ -8193,17 +8201,68 @@ function NeverLose:CreateWindow(Config)
 
 	RightMenuFrame.Name = NeverLose.RandomString();
 	RightMenuFrame.Parent = WindowFrame
-	RightMenuFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 13)
+	RightMenuFrame.BackgroundColor3 = NeverLose.Theme.Main
 	RightMenuFrame.BackgroundTransparency = 0.600
 	RightMenuFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	RightMenuFrame.BorderSizePixel = 0
 	RightMenuFrame.ClipsDescendants = true
-	RightMenuFrame.Position = UDim2.new(0, 176, 0, 0)
-	RightMenuFrame.Size = UDim2.new(1, -176, 1, 0)
+	-- ===== верхняя панель: название в шапке, пользователь справа, вкладки в один ряд под шапкой =====
+	LeftMenuFrame.Size = UDim2.new(1, 0, 0, 32);
+	LeftMenuFrame.BackgroundTransparency = 1;
+
+	local HeaderBg = Instance.new("Frame");
+	local HeaderBgCorner = Instance.new("UICorner");
+	local HeaderBgSquare = Instance.new("Frame");
+
+	HeaderBg.Name = NeverLose.RandomString();
+	HeaderBg.Parent = WindowFrame;
+	HeaderBg.BackgroundColor3 = Color3.fromRGB(16, 16, 24);
+	HeaderBg.BorderSizePixel = 0;
+	HeaderBg.Size = UDim2.new(1, 0, 0, 32);
+	HeaderBg.ZIndex = 0;
+	HeaderBgCorner.CornerRadius = UDim.new(0, 12);
+	HeaderBgCorner.Parent = HeaderBg;
+
+	HeaderBgSquare.Name = NeverLose.RandomString();
+	HeaderBgSquare.Parent = WindowFrame;
+	HeaderBgSquare.BackgroundColor3 = Color3.fromRGB(16, 16, 24);
+	HeaderBgSquare.BorderSizePixel = 0;
+	HeaderBgSquare.Position = UDim2.new(0, 0, 0, 22);
+	HeaderBgSquare.Size = UDim2.new(1, 0, 0, 10);
+	HeaderBgSquare.ZIndex = 0;
+
+	Window.HeaderBgs = { HeaderBg, HeaderBgSquare };
+	HeadFrame.Size = UDim2.new(0, 260, 1, 0);
+	WindowContent.Visible = false;
+	LineFrame.Visible = false;
+
+	BottomFrame.AnchorPoint = Vector2.new(1, 0);
+	BottomFrame.Position = UDim2.new(1, -12, 0, 0);
+	BottomFrame.Size = UDim2.new(0, 220, 1, 0);
+
+	LeftScrollingFrame.Parent = WindowFrame;
+	LeftScrollingFrame.AnchorPoint = Vector2.new(0, 0);
+	LeftScrollingFrame.Position = UDim2.new(0, 12, 0, 36);
+	LeftScrollingFrame.Size = UDim2.new(1, -24, 0, 40);
+	LeftScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.X;
+	LeftScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.X;
+	UIListLayout.FillDirection = Enum.FillDirection.Horizontal;
+	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left;
+	UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center;
+	UIListLayout.Padding = UDim.new(0, 6);
+
+	RightMenuFrame.Position = UDim2.new(0, 0, 0, 78);
+	RightMenuFrame.Size = UDim2.new(1, 0, 1, -78);
+
+	-- убираем логотип, профиль и строку конфига с поиском
+	LogoImage.Visible = false;
+	WindowName.Position = UDim2.new(0, 16, 0, 3);
+	BottomFrame.Visible = false;
+	RightHeader.Visible = false;
 	RightMenuFrame.ZIndex = 8
 
-	UIStroke.Transparency = 0.650
-	UIStroke.Color = Color3.fromRGB(45, 48, 58)
+	UIStroke.Transparency = 1.000
+	UIStroke.Color = NeverLose.Theme.Stroke
 	UIStroke.Parent = RightMenuFrame
 
 	UICorner_4.CornerRadius = UDim.new(0, 13)
@@ -8221,7 +8280,7 @@ function NeverLose:CreateWindow(Config)
 	LineFrame_3.Name = NeverLose.RandomString();
 	LineFrame_3.Parent = RightHeader
 	LineFrame_3.AnchorPoint = Vector2.new(0.5, 1)
-	LineFrame_3.BackgroundColor3 = Color3.fromRGB(45, 48, 58)
+	LineFrame_3.BackgroundColor3 = NeverLose.Theme.Stroke
 	LineFrame_3.BackgroundTransparency = 0.650
 	LineFrame_3.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	LineFrame_3.BorderSizePixel = 0
@@ -8232,7 +8291,7 @@ function NeverLose:CreateWindow(Config)
 	ConfigFrame.Name = NeverLose.RandomString();
 	ConfigFrame.Parent = RightHeader
 	ConfigFrame.AnchorPoint = Vector2.new(0, 0.5)
-	ConfigFrame.BackgroundColor3 = Color3.fromRGB(13, 17, 22)
+	ConfigFrame.BackgroundColor3 = NeverLose.Theme.Deep2
 	ConfigFrame.BackgroundTransparency = 0.750
 	ConfigFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	ConfigFrame.BorderSizePixel = 0
@@ -8241,7 +8300,7 @@ function NeverLose:CreateWindow(Config)
 	ConfigFrame.ZIndex = 9
 
 	UIStroke_2.Transparency = 0.650
-	UIStroke_2.Color = Color3.fromRGB(45, 48, 58)
+	UIStroke_2.Color = NeverLose.Theme.Stroke
 	UIStroke_2.Parent = ConfigFrame
 
 	UICorner_5.CornerRadius = UDim.new(0, 4)
@@ -8259,14 +8318,14 @@ function NeverLose:CreateWindow(Config)
 	ConfigIcon.ZIndex = 9
 	ConfigIcon.FontFace = NeverLose.BuiltInBold
 	ConfigIcon.Text = "floppy-disk"
-	ConfigIcon.TextColor3 = Color3.fromRGB(223, 223, 223)
+	ConfigIcon.TextColor3 = NeverLose.Theme.Icon
 	ConfigIcon.TextSize = 16.000
 	ConfigIcon.TextTransparency = 0.250
 	ConfigIcon.TextWrapped = true
 
 	LineFrame_4.Name = NeverLose.RandomString();
 	LineFrame_4.Parent = ConfigFrame
-	LineFrame_4.BackgroundColor3 = Color3.fromRGB(45, 48, 58)
+	LineFrame_4.BackgroundColor3 = NeverLose.Theme.Stroke
 	LineFrame_4.BackgroundTransparency = 0.650
 	LineFrame_4.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	LineFrame_4.BorderSizePixel = 0
@@ -8284,8 +8343,8 @@ function NeverLose:CreateWindow(Config)
 	ConfigName.Size = UDim2.new(1, -7, 0, 15)
 	ConfigName.ZIndex = 9
 	ConfigName.Font = Enum.Font.GothamMedium
-	ConfigName.Text = "Default"
-	ConfigName.TextColor3 = Color3.fromRGB(255, 255, 255)
+	ConfigName.Text = "No config"
+	ConfigName.TextColor3 = NeverLose.Theme.Text
 	ConfigName.TextSize = 12.000
 	ConfigName.TextTransparency = 0.350
 	ConfigName.TextXAlignment = Enum.TextXAlignment.Left
@@ -8302,7 +8361,7 @@ function NeverLose:CreateWindow(Config)
 	ConfigBthIcon.ZIndex = 9
 	ConfigBthIcon.FontFace = NeverLose.BuiltInBold
 	ConfigBthIcon.Text = "chevron-small-down"
-	ConfigBthIcon.TextColor3 = Color3.fromRGB(223, 223, 223)
+	ConfigBthIcon.TextColor3 = NeverLose.Theme.Icon
 	ConfigBthIcon.TextSize = 16.000
 	ConfigBthIcon.TextTransparency = 0.250
 	ConfigBthIcon.TextWrapped = true
@@ -8331,7 +8390,7 @@ function NeverLose:CreateWindow(Config)
 	SearchIcon.ZIndex = 12
 	SearchIcon.FontFace = NeverLose.BuiltInBold
 	SearchIcon.Text = "magnifying-glass"
-	SearchIcon.TextColor3 = Color3.fromRGB(223, 223, 223)
+	SearchIcon.TextColor3 = NeverLose.Theme.Icon
 	SearchIcon.TextSize = 14.000
 	SearchIcon.TextTransparency = 0.45
 	SearchIcon.TextWrapped = true
@@ -8350,7 +8409,7 @@ function NeverLose:CreateWindow(Config)
 	SearchBox.Font = Enum.Font.GothamMedium
 	SearchBox.PlaceholderText = "Search"
 	SearchBox.Text = ""
-	SearchBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+	SearchBox.TextColor3 = NeverLose.Theme.Text
 	SearchBox.TextSize = 13.000
 	SearchBox.TextTransparency = 1
 	SearchBox.TextXAlignment = Enum.TextXAlignment.Left
@@ -8362,8 +8421,8 @@ function NeverLose:CreateWindow(Config)
 	TabContainer.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	TabContainer.BorderSizePixel = 0
 	TabContainer.ClipsDescendants = true
-	TabContainer.Position = UDim2.new(0, 0, 0, 50)
-	TabContainer.Size = UDim2.new(1, 0, 1, -50)
+	TabContainer.Position = UDim2.new(0, 0, 0, 0)
+	TabContainer.Size = UDim2.new(1, 0, 1, 0)
 	TabContainer.ZIndex = 5
 
 	do
