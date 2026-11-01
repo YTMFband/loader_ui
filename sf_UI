@@ -7716,7 +7716,7 @@ function NeverLose:CreateWindow(Config)
 		Size = UDim2.new(0, 640, 0, 480),
 		ConfigFolder = "NeverLoseConfigs",
 		Enable3DRenderer = false,
-		Badge = "v1.3",
+		Badge = "v1.4",
 		Keybind = "Insert"
 	});
 
@@ -8629,6 +8629,8 @@ function NeverLose:CreateWindow(Config)
 		local TabStroke = Instance.new("UIStroke")
 		TabStroke.Thickness = 1
 		TabStroke.Color = NeverLose.AccentColor
+		TabStroke.ZIndex = 9
+		TabStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		TabStroke.Transparency = 1
 		TabStroke.Parent = TabButton
 		NeverLose:BindTheme(TabStroke , 'Color' , 'Accent');
