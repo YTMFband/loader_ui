@@ -268,21 +268,21 @@ NeverLose.StartedAt = os.clock();
 -- NeverLose:SetTheme('One Dark')  /  NeverLose:SetTheme({ Accent = Color3.fromRGB(255, 80, 120) })
 NeverLose.Themes = {
 	['Matcha'] = {
-		Main = Color3.fromRGB(27, 25, 36),
-		Card = Color3.fromRGB(31, 30, 46),
-		Elem = Color3.fromRGB(42, 40, 60),
-		Elem2 = Color3.fromRGB(48, 46, 68),
-		Hover = Color3.fromRGB(56, 55, 71),
-		Field = Color3.fromRGB(42, 40, 60),
-		Deep = Color3.fromRGB(42, 40, 60),
-		Deep2 = Color3.fromRGB(36, 34, 50),
-		Track = Color3.fromRGB(56, 55, 71),
-		Stroke = Color3.fromRGB(60, 58, 78),
-		Text = Color3.fromRGB(235, 235, 240),
-		Icon = Color3.fromRGB(223, 223, 223),
-		TextDim = Color3.fromRGB(190, 195, 205),
-		TextMute = Color3.fromRGB(140, 145, 160),
-		Accent = Color3.fromRGB(200, 199, 203),
+		Main = Color3.fromRGB(40, 37, 34),
+		Card = Color3.fromRGB(31, 28, 26),
+		Elem = Color3.fromRGB(46, 42, 39),
+		Elem2 = Color3.fromRGB(52, 48, 44),
+		Hover = Color3.fromRGB(58, 53, 49),
+		Field = Color3.fromRGB(46, 42, 39),
+		Deep = Color3.fromRGB(36, 33, 30),
+		Deep2 = Color3.fromRGB(31, 28, 25),
+		Track = Color3.fromRGB(63, 57, 53),
+		Stroke = Color3.fromRGB(72, 66, 60),
+		Text = Color3.fromRGB(242, 241, 239),
+		Icon = Color3.fromRGB(224, 222, 218),
+		TextDim = Color3.fromRGB(190, 187, 182),
+		TextMute = Color3.fromRGB(130, 124, 118),
+		Accent = Color3.fromRGB(222, 72, 66),
 	},
 	['NeverLose'] = {
 		Main = Color3.fromRGB(8, 8, 13),
@@ -7716,7 +7716,7 @@ function NeverLose:CreateWindow(Config)
 		Size = UDim2.new(0, 640, 0, 480),
 		ConfigFolder = "NeverLoseConfigs",
 		Enable3DRenderer = false,
-		Badge = "v1.4",
+		Badge = "v1.5",
 		Keybind = "Insert"
 	});
 
@@ -8195,23 +8195,38 @@ function NeverLose:CreateWindow(Config)
 
 	LeftScrollingFrame.Parent = WindowFrame;
 	LeftScrollingFrame.AnchorPoint = Vector2.new(0, 0);
-	LeftScrollingFrame.Position = UDim2.new(0, 12, 0, 34);
-	LeftScrollingFrame.Size = UDim2.new(1, -24, 0, 36);
-	LeftScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.X;
-	LeftScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.X;
+	-- вертикальный сайдбар вкладок (как у Terminus): колонка слева под шапкой
+	LeftScrollingFrame.Position = UDim2.new(0, 0, 0, 40);
+	LeftScrollingFrame.Size = UDim2.new(0, 150, 1, -40);
+	LeftScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y;
+	LeftScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y;
 
-	-- отступ вкладок от края: сдвигает содержимое внутри скролл-контейнера,
-	-- не меняя их геометрию (иконки, ширина пилюль остаются оригинальными)
+	-- отступ вкладок внутри сайдбара
 	local TabRowPadding = Instance.new("UIPadding");
-	TabRowPadding.PaddingLeft = UDim.new(0, 5);
+	TabRowPadding.PaddingLeft = UDim.new(0, 8);
+	TabRowPadding.PaddingTop = UDim.new(0, 8);
+	TabRowPadding.PaddingRight = UDim.new(0, 8);
 	TabRowPadding.Parent = LeftScrollingFrame;
-	UIListLayout.FillDirection = Enum.FillDirection.Horizontal;
-	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left;
-	UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center;
-	UIListLayout.Padding = UDim.new(0, 6);
 
-	RightMenuFrame.Position = UDim2.new(0, 0, 0, 72);
-	RightMenuFrame.Size = UDim2.new(1, 0, 1, -72);
+	UIListLayout.FillDirection = Enum.FillDirection.Vertical;
+	UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left;
+	UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top;
+	UIListLayout.Padding = UDim.new(0, 4);
+
+	-- подложка сайдбара (тот же цвет, что окно; контент начинается правее колонки)
+	local SidebarBg = Instance.new("Frame");
+	SidebarBg.Name = NeverLose.RandomString();
+	SidebarBg.BackgroundColor3 = NeverLose.Theme.Main;
+	SidebarBg.BackgroundTransparency = 0.0255;
+	SidebarBg.BorderSizePixel = 0;
+	SidebarBg.Position = UDim2.new(0, 0, 0, 32);
+	SidebarBg.Size = UDim2.new(0, 150, 1, -32);
+	SidebarBg.ZIndex = 0;
+	SidebarBg.Parent = WindowFrame;
+	NeverLose:BindTheme(SidebarBg , 'BackgroundColor3' , 'Main');
+
+	RightMenuFrame.Position = UDim2.new(0, 158, 0, 40);
+	RightMenuFrame.Size = UDim2.new(1, -166, 1, -48);
 
 	-- убираем логотип, профиль и строку конфига с поиском
 	LogoImage.Visible = false;
@@ -8634,12 +8649,12 @@ function NeverLose:CreateWindow(Config)
 		-- поэтому если контур опять отрисуется криво -- вернём вариантом с фреймом)
 		local TabStroke = Instance.new("UIStroke")
 		TabStroke.Thickness = 1
-		TabStroke.Color = NeverLose.AccentColor
+		TabStroke.Color = NeverLose.Theme.Text
 		TabStroke.ZIndex = 9
 		TabStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 		TabStroke.Transparency = 1
 		TabStroke.Parent = TabButton
-		NeverLose:BindTheme(TabStroke , 'Color' , 'Accent');
+		NeverLose:BindTheme(TabStroke , 'Color' , 'Text');
 
 		TabIcon.Name = NeverLose.RandomString();
 		TabIcon.Parent = TabButton
