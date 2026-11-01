@@ -8193,8 +8193,8 @@ function NeverLose:CreateWindow(Config)
 
 	LeftScrollingFrame.Parent = WindowFrame;
 	LeftScrollingFrame.AnchorPoint = Vector2.new(0, 0);
-	LeftScrollingFrame.Position = UDim2.new(0, 12, 0, 36);
-	LeftScrollingFrame.Size = UDim2.new(1, -24, 0, 40);
+	LeftScrollingFrame.Position = UDim2.new(0, 12, 0, 34);
+	LeftScrollingFrame.Size = UDim2.new(1, -24, 0, 36);
 	LeftScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.X;
 	LeftScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.X;
 	UIListLayout.FillDirection = Enum.FillDirection.Horizontal;
@@ -8202,12 +8202,16 @@ function NeverLose:CreateWindow(Config)
 	UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center;
 	UIListLayout.Padding = UDim.new(0, 6);
 
-	RightMenuFrame.Position = UDim2.new(0, 0, 0, 78);
-	RightMenuFrame.Size = UDim2.new(1, 0, 1, -78);
+	RightMenuFrame.Position = UDim2.new(0, 0, 0, 72);
+	RightMenuFrame.Size = UDim2.new(1, 0, 1, -72);
 
 	-- убираем логотип, профиль и строку конфига с поиском
 	LogoImage.Visible = false;
-	WindowName.Position = UDim2.new(0, 16, 0, 3);
+	WindowName.AnchorPoint = Vector2.new(0, 0.5);
+	WindowName.Position = UDim2.new(0, 12, 0.5, 0);
+	WindowName.Size = UDim2.new(0, 220, 0, 18);
+	WindowName.TextSize = 15;
+	WindowName.TextYAlignment = Enum.TextYAlignment.Center;
 	BottomFrame.Visible = false;
 	RightHeader.Visible = false;
 	RightMenuFrame.ZIndex = 8
@@ -8592,13 +8596,13 @@ function NeverLose:CreateWindow(Config)
 		TabButton.Name = NeverLose.RandomString();
 		TabButton.Parent = LeftScrollingFrame
 		TabButton.BackgroundColor3 = NeverLose.Theme.Hover
-		TabButton.BackgroundTransparency = 0.500
+		TabButton.BackgroundTransparency = 0.620
 		TabButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabButton.BorderSizePixel = 0
 		TabButton.Size = UDim2.new(1, -1, 0, 30)
 		TabButton.ZIndex = 8
 
-		UICorner.CornerRadius = UDim.new(0, 6)
+		UICorner.CornerRadius = UDim.new(0, 9)
 		UICorner.Parent = TabButton
 
 		TabIcon.Name = NeverLose.RandomString();
@@ -8791,7 +8795,7 @@ function NeverLose:CreateWindow(Config)
 
 			if value then
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
-					BackgroundTransparency = 0.500
+					BackgroundTransparency = 0.620
 				})
 
 				NeverLose.PlayAnimate(TabIcon , SlowyTween , {
@@ -8840,11 +8844,11 @@ function NeverLose:CreateWindow(Config)
 		NeverLose:AddSignal(over.MouseEnter:Connect(LPH_NO_VIRTUALIZE(function()
 			if Window.Tabs[Window.CurrentTab] == Tab then
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
-					BackgroundTransparency = 0.500
+					BackgroundTransparency = 0.620
 				})
 			else
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
-					BackgroundTransparency = 0.8
+					BackgroundTransparency = 0.88
 				})
 			end;
 		end)))
@@ -8852,7 +8856,7 @@ function NeverLose:CreateWindow(Config)
 		NeverLose:AddSignal(over.MouseLeave:Connect(LPH_NO_VIRTUALIZE(function()
 			if Window.Tabs[Window.CurrentTab] == Tab then
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
-					BackgroundTransparency = 0.500
+					BackgroundTransparency = 0.620
 				})
 			else
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
