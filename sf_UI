@@ -2395,12 +2395,15 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 		local Toggle = Instance.new("Frame")
 		local UICorner = Instance.new("UICorner")
+		local TrackGradient = Instance.new("UIGradient")
+		local TrackStroke = Instance.new("UIStroke")
 		local Circle = Instance.new("Frame")
 		local UICorner_2 = Instance.new("UICorner")
+		local CircleGradient = Instance.new("UIGradient")
 
 		Toggle.Name = NeverLose.RandomString();
 		Toggle.Parent = Handler
-		Toggle.BackgroundColor3 = NeverLose.Theme.Deep
+		Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- цвет задаёт градиент
 		Toggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Toggle.BorderSizePixel = 0
 		Toggle.ClipsDescendants = true
@@ -2410,6 +2413,14 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 		UICorner.CornerRadius = UDim.new(1, 0)
 		UICorner.Parent = Toggle
+
+		TrackGradient.Rotation = 90
+		TrackGradient.Parent = Toggle
+
+		TrackStroke.Thickness = 1
+		TrackStroke.Color = NeverLose.AccentColor
+		TrackStroke.Transparency = 1
+		TrackStroke.Parent = Toggle
 
 		Circle.Name = NeverLose.RandomString();
 		Circle.Parent = Toggle
@@ -2425,15 +2436,31 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		UICorner_2.CornerRadius = UDim.new(1, 0)
 		UICorner_2.Parent = Circle
 
+		CircleGradient.Rotation = 90
+		CircleGradient.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(217, 220, 230))
+		CircleGradient.Parent = Circle
+
+		-- градиенты берутся из текущей темы и акцента при каждом переключении
+		local function offTrack()
+			return ColorSequence.new(NeverLose.Theme.Deep:Lerp(Color3.new(1, 1, 1), 0.06), NeverLose.Theme.Deep)
+		end
+
+		local function onTrack()
+			return ColorSequence.new(NeverLose.AccentColor:Lerp(Color3.new(1, 1, 1), 0.35), NeverLose.AccentColor:Lerp(Color3.new(0, 0, 0), 0.2))
+		end
+
 		local ToggleLib = {
-			Root = Toggle	
+			Root = Toggle
 		};
 
 		ToggleLib.SetUI = LPH_NO_VIRTUALIZE(function(value)
 			if value then
+				TrackGradient.Color = onTrack()
 				NeverLose.PlayAnimate(Toggle,SlowyTween,{
-					BackgroundTransparency = 0,
-					BackgroundColor3 = NeverLose.AccentColor
+					BackgroundTransparency = 0
+				})
+				NeverLose.PlayAnimate(TrackStroke,SlowyTween,{
+					Transparency = 0.5
 				})
 
 				NeverLose.PlayAnimate(Circle,SlowyTween,{
@@ -2442,9 +2469,12 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 					Position = UDim2.new(0.7, 0, 0.5, 0)
 				})
 			else
+				TrackGradient.Color = offTrack()
 				NeverLose.PlayAnimate(Toggle,SlowyTween,{
-					BackgroundTransparency = 0,
-					BackgroundColor3 = NeverLose.Theme.Deep
+					BackgroundTransparency = 0
+				})
+				NeverLose.PlayAnimate(TrackStroke,SlowyTween,{
+					Transparency = 1
 				})
 
 				NeverLose.PlayAnimate(Circle,SlowyTween,{
@@ -2460,8 +2490,10 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 				ToggleLib.SetUI(Config.Default);
 			else
 				NeverLose.PlayAnimate(Toggle,SlowyTween,{
-					BackgroundTransparency = 1,
-					BackgroundColor3 = NeverLose.Theme.Deep
+					BackgroundTransparency = 1
+				})
+				NeverLose.PlayAnimate(TrackStroke,SlowyTween,{
+					Transparency = 1
 				})
 
 				NeverLose.PlayAnimate(Circle,SlowyTween,{
@@ -2482,22 +2514,6 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 			Config.Callback(Config.Default)
 		end))
-
-		ToggleLib.Signal = Signal:Connect(ToggleLib.SetVisible);
-
-		function ToggleLib:GetValue()
-			return Config.Default;
-		end;
-
-		function ToggleLib:SetValue(v)
-			Config.Default = v;
-
-			if Signal:GetValue() then
-				ToggleLib.SetUI(Config.Default);
-			end;
-
-			Config.Callback(Config.Default)
-		end;
 
 		if Config.Flag then
 			NeverLose.Flags[Config.Flag] = ToggleLib;
