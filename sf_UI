@@ -610,7 +610,7 @@ NeverLose.Themes = {
 };
 
 NeverLose.Theme = {};
-NeverLose.CurrentTheme = 'Matcha';
+NeverLose.CurrentTheme = 'NeverLose';
 
 for k , v in next , NeverLose.Themes[NeverLose.CurrentTheme] do
 	NeverLose.Theme[k] = v;
@@ -8357,7 +8357,6 @@ function NeverLose:CreateWindow(Config)
 	BottomFrame.Position = UDim2.new(1, -12, 0, 0);
 	BottomFrame.Size = UDim2.new(0, 220, 1, 0);
 
-	LeftScrollingFrame.Parent = WindowFrame;
 	LeftScrollingFrame.AnchorPoint = Vector2.new(0, 0);
 
 	RightMenuFrame.Position = UDim2.new(0, 175, 0, 0);
@@ -8749,7 +8748,7 @@ function NeverLose:CreateWindow(Config)
 
 		TabButton.Name = NeverLose.RandomString();
 		TabButton.Parent = LeftScrollingFrame
-		TabButton.BackgroundColor3 = NeverLose.Theme.Hover
+		TabButton.BackgroundColor3 = Color3.fromRGB(41, 45, 49)
 		TabButton.BackgroundTransparency = 0.500
 		TabButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabButton.BorderSizePixel = 0
