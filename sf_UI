@@ -8207,7 +8207,7 @@ function NeverLose:CreateWindow(Config)
 	RightMenuFrame.BorderSizePixel = 0
 	RightMenuFrame.ClipsDescendants = true
 	-- ===== верхняя панель: название в шапке, пользователь справа, вкладки в один ряд под шапкой =====
-	LeftMenuFrame.Size = UDim2.new(1, 0, 0, 32);
+LeftMenuFrame.Size = UDim2.new(1, 0, 0, 42);
 	LeftMenuFrame.BackgroundTransparency = 1;
 
 	local HeaderBg = Instance.new("Frame");
@@ -8218,7 +8218,7 @@ function NeverLose:CreateWindow(Config)
 	HeaderBg.Parent = WindowFrame;
 	HeaderBg.BackgroundColor3 = Color3.fromRGB(16, 16, 24);
 	HeaderBg.BorderSizePixel = 0;
-	HeaderBg.Size = UDim2.new(1, 0, 0, 32);
+HeaderBg.Size = UDim2.new(1, 0, 0, 42);
 	HeaderBg.ZIndex = 0;
 	HeaderBgCorner.CornerRadius = UDim.new(0, 12);
 	HeaderBgCorner.Parent = HeaderBg;
@@ -8227,7 +8227,7 @@ function NeverLose:CreateWindow(Config)
 	HeaderBgSquare.Parent = WindowFrame;
 	HeaderBgSquare.BackgroundColor3 = Color3.fromRGB(16, 16, 24);
 	HeaderBgSquare.BorderSizePixel = 0;
-	HeaderBgSquare.Position = UDim2.new(0, 0, 0, 22);
+HeaderBgSquare.Position = UDim2.new(0, 0, 0, 32);
 	HeaderBgSquare.Size = UDim2.new(1, 0, 0, 10);
 	HeaderBgSquare.ZIndex = 0;
 
@@ -8242,7 +8242,7 @@ function NeverLose:CreateWindow(Config)
 
 	LeftScrollingFrame.Parent = WindowFrame;
 	LeftScrollingFrame.AnchorPoint = Vector2.new(0, 0);
-	LeftScrollingFrame.Position = UDim2.new(0, 12, 0, 36);
+LeftScrollingFrame.Position = UDim2.new(0, 12, 0, 46);
 	LeftScrollingFrame.Size = UDim2.new(1, -24, 0, 40);
 	LeftScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.X;
 	LeftScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.X;
@@ -8251,8 +8251,8 @@ function NeverLose:CreateWindow(Config)
 	UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Center;
 	UIListLayout.Padding = UDim.new(0, 6);
 
-	RightMenuFrame.Position = UDim2.new(0, 0, 0, 78);
-	RightMenuFrame.Size = UDim2.new(1, 0, 1, -78);
+RightMenuFrame.Position = UDim2.new(0, 0, 0, 88);
+RightMenuFrame.Size = UDim2.new(1, 0, 1, -88);
 
 	-- убираем логотип, профиль и строку конфига с поиском
 	LogoImage.Visible = false;
@@ -8934,10 +8934,11 @@ function NeverLose:CreateWindow(Config)
 				Collapsible = false, -- подпись становится кнопкой сворачивания
 				Collapsed = false,   -- стартовать свёрнутой (только при Collapsible = true)
 				Flag = nil,          -- сохранять свёрнутость в конфиг
-				Style = nil          -- 'Inside' (название внутри карточки, по умолчанию) | 'Classic' (подпись над карточкой)
+Style = nil          -- 'Inside' (название внутри карточки, по умолчанию) | 'Classic' (подпись над карточкой) | 'Bare' (без полосы заголовка: подвкладки сверху)
 			});
 
-			local Collapsed = (Config.Collapsible == true) and (Config.Collapsed == true);
+local Bare = string.lower(tostring(Config.Style or '')) == 'bare';
+			local Collapsed = (Config.Collapsible == true) and (Config.Collapsed == true) and not Bare;
 			local Inside = string.lower(tostring(Config.Style or NeverLose.SectionStyle or 'Inside')) ~= 'classic';
 			local HeaderH = 30;
 
@@ -9001,9 +9002,15 @@ function NeverLose:CreateWindow(Config)
 			UICorner.CornerRadius = UDim.new(0, 10)
 			UICorner.Parent = SectionHandler
 
-			UIListLayout.Parent = SectionHandler
-			UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-			UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout.Parent = SectionHandler
+UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+			if Bare then
+				local BarePad = Instance.new("UIPadding");
+				BarePad.PaddingTop = UDim.new(0, 6);
+				BarePad.Parent = SectionHandler;
+			end;
 
 			-- стиль Inside: название секции лежит внутри карточки на светлой полосе-заголовке
 			local Header , Band , TitleLabel = nil , nil , nil;
@@ -9013,6 +9020,7 @@ function NeverLose:CreateWindow(Config)
 				SectionHandler.Position = UDim2.new(0.5, 0, 0, 0);
 				SectionHandler.Size = UDim2.new(1, -10, 1, 0);
 
+if not Bare then
 				Header = Instance.new("Frame");
 				Header.Name = NeverLose.RandomString();
 				Header.Parent = SectionHandler;
@@ -9051,12 +9059,13 @@ function NeverLose:CreateWindow(Config)
 				TitleLabel.TextSize = 12.000;
 				TitleLabel.TextTransparency = 0.100;
 				TitleLabel.TextTruncate = Enum.TextTruncate.AtEnd;
-				TitleLabel.TextXAlignment = Enum.TextXAlignment.Left;
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left;
+				end;
 			end;
 
 			local function ApplySectionSize()
 				local contentY = UIListLayout.AbsoluteContentSize.Y;
-				local emptyY = Inside and (HeaderH + 1) or 1;
+local emptyY = (Inside and not Bare) and (HeaderH + 1) or 1;
 
 				if contentY <= emptyY then
 					NeverLose.PlayAnimate(SectionFrame , VSlowTween , {
