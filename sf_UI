@@ -8615,7 +8615,7 @@ function NeverLose:CreateWindow(Config)
 		TabButton.Name = NeverLose.RandomString();
 		TabButton.Parent = LeftScrollingFrame
 		TabButton.BackgroundColor3 = NeverLose.Theme.Hover
-		TabButton.BackgroundTransparency = 0.620
+		TabButton.BackgroundTransparency = 0.45
 		TabButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabButton.BorderSizePixel = 0
 		TabButton.Size = UDim2.new(1, -1, 0, 30)
@@ -8623,13 +8623,6 @@ function NeverLose:CreateWindow(Config)
 
 		UICorner.CornerRadius = UDim.new(0, 9)
 		UICorner.Parent = TabButton
-
-		-- тонкий контур активной пилюли, включается в SetValue(true)
-		local TabStroke = Instance.new("UIStroke")
-		TabStroke.Thickness = 1
-		TabStroke.Color = NeverLose.AccentColor
-		TabStroke.Transparency = 1
-		TabStroke.Parent = TabButton
 
 		TabIcon.Name = NeverLose.RandomString();
 		TabIcon.Parent = TabButton
@@ -8821,11 +8814,7 @@ function NeverLose:CreateWindow(Config)
 
 			if value then
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
-					BackgroundTransparency = 0.620
-				})
-
-				NeverLose.PlayAnimate(TabStroke , SlowyTween , {
-					Transparency = 0.35
+					BackgroundTransparency = 0.45
 				})
 
 				NeverLose.PlayAnimate(TabIcon , SlowyTween , {
@@ -8839,10 +8828,6 @@ function NeverLose:CreateWindow(Config)
 			else
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
 					BackgroundTransparency = 1
-				})
-
-				NeverLose.PlayAnimate(TabStroke , SlowyTween , {
-					Transparency = 1
 				})
 
 				NeverLose.PlayAnimate(TabIcon , SlowyTween , {
@@ -8878,7 +8863,7 @@ function NeverLose:CreateWindow(Config)
 		NeverLose:AddSignal(over.MouseEnter:Connect(LPH_NO_VIRTUALIZE(function()
 			if Window.Tabs[Window.CurrentTab] == Tab then
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
-					BackgroundTransparency = 0.620
+					BackgroundTransparency = 0.45
 				})
 			else
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
@@ -8890,7 +8875,7 @@ function NeverLose:CreateWindow(Config)
 		NeverLose:AddSignal(over.MouseLeave:Connect(LPH_NO_VIRTUALIZE(function()
 			if Window.Tabs[Window.CurrentTab] == Tab then
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
-					BackgroundTransparency = 0.620
+					BackgroundTransparency = 0.45
 				})
 			else
 				NeverLose.PlayAnimate(TabButton , SlowyTween , {
