@@ -7827,6 +7827,7 @@ function NeverLose:CreateWindow(Config)
 		ScrollingFrame = { 'BackgroundTransparency' },
 		TextLabel = { 'BackgroundTransparency' , 'TextTransparency' },
 		TextButton = { 'BackgroundTransparency' , 'TextTransparency' },
+		TextBox = { 'BackgroundTransparency' , 'TextTransparency' },
 		ImageLabel = { 'BackgroundTransparency' , 'ImageTransparency' },
 		ImageButton = { 'BackgroundTransparency' , 'ImageTransparency' },
 		UIStroke = { 'Transparency' },
@@ -7909,188 +7910,15 @@ function NeverLose:CreateWindow(Config)
 
 	Window.SetRender = LPH_NO_VIRTUALIZE(function(self , value)
 		windowFade(value);
-		if value then
-			NeverLose.PlayAnimate(WindowFrame , FadeInfo , {
-				BackgroundTransparency = (NeverLose.EnabledBlur and 0.055) or 0.0255
-			})
 
-			for _ , h in ipairs(Window.HeaderBgs or {}) do
-				NeverLose.PlayAnimate(h , FadeInfo , { BackgroundTransparency = (NeverLose.EnabledBlur and 0.055) or 0.0255 })
-			end;
+		-- единственный отдельный твин -- сам корневой фрейм.
+		-- Шапка, вкладки и контент гаснут/проявляются одним проходом windowFade,
+		-- без перекрывающихся твинов на одни и те же элементы.
+		NeverLose.PlayAnimate(WindowFrame , FadeInfo , {
+			BackgroundTransparency = value and ((NeverLose.EnabledBlur and 0.055) or 0.0255) or 1
+		});
 
-			NeverLose.PlayAnimate(LogoImage , FadeInfo , {
-				ImageTransparency = 0
-			})
-
-			NeverLose.PlayAnimate(WindowName , FadeInfo , {
-				TextTransparency = 0
-			})
-
-			NeverLose.PlayAnimate(WindowContent , FadeInfo , {
-				TextTransparency = 0.650
-			})
-
-			NeverLose.PlayAnimate(LineFrame , FadeInfo , {
-				BackgroundTransparency = 0.650
-			})
-
-			NeverLose.PlayAnimate(AccountProfile , FadeInfo , {
-				ImageTransparency = 0
-			})
-
-			NeverLose.PlayAnimate(AccountName , FadeInfo , {
-				TextTransparency = 0
-			})
-
-			NeverLose.PlayAnimate(ExpireLabel , FadeInfo , {
-				TextTransparency = 0.650
-			})
-
-			NeverLose.PlayAnimate(LineFrame_2 , FadeInfo , {
-				BackgroundTransparency = 0.650
-			})
-
-			NeverLose.PlayAnimate(UserSettingButton , FadeInfo , {
-				TextTransparency = 0.5
-			})
-
-			NeverLose.PlayAnimate(RightMenuFrame , FadeInfo , {
-				BackgroundTransparency = 0.600
-			})
-
-			NeverLose.PlayAnimate(UIStroke , FadeInfo , {
-				Transparency = 1.000
-			})
-
-			NeverLose.PlayAnimate(LineFrame_3 , FadeInfo , {
-				BackgroundTransparency = 0.650
-			})
-
-			NeverLose.PlayAnimate(ConfigFrame , FadeInfo , {
-				BackgroundTransparency = 0.750
-			})
-
-			NeverLose.PlayAnimate(UIStroke_2 , FadeInfo , {
-				Transparency = 1.000
-			})
-
-			NeverLose.PlayAnimate(ConfigIcon , FadeInfo , {
-				TextTransparency = 0.250
-			})
-
-			NeverLose.PlayAnimate(LineFrame_4 , FadeInfo , {
-				BackgroundTransparency = 0.650
-			})
-
-			NeverLose.PlayAnimate(ConfigName , FadeInfo , {
-				TextTransparency = 0.350
-			})
-
-			NeverLose.PlayAnimate(ConfigBthIcon , FadeInfo , {
-				TextTransparency = 0.250
-			})
-
-			NeverLose.PlayAnimate(SearchIcon , FadeInfo , {
-				TextTransparency = 0.250
-			})
-
-			NeverLose.PlayAnimate(SearchBox , FadeInfo , {
-				TextTransparency = 0.350
-			})
-
-			Window.Shadow:Render(false);
-		else
-
-			NeverLose.PlayAnimate(WindowFrame , FadeInfo , {
-				BackgroundTransparency = 1
-			})
-
-			for _ , h in ipairs(Window.HeaderBgs or {}) do
-				NeverLose.PlayAnimate(h , FadeInfo , { BackgroundTransparency = 1 })
-			end;
-
-			NeverLose.PlayAnimate(LogoImage , FadeInfo , {
-				ImageTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(WindowName , FadeInfo , {
-				TextTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(WindowContent , FadeInfo , {
-				TextTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(LineFrame , FadeInfo , {
-				BackgroundTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(AccountProfile , FadeInfo , {
-				ImageTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(AccountName , FadeInfo , {
-				TextTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(ExpireLabel , FadeInfo , {
-				TextTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(LineFrame_2 , FadeInfo , {
-				BackgroundTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(UserSettingButton , FadeInfo , {
-				TextTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(RightMenuFrame , FadeInfo , {
-				BackgroundTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(UIStroke , FadeInfo , {
-				Transparency = 1
-			})
-
-			NeverLose.PlayAnimate(LineFrame_3 , FadeInfo , {
-				BackgroundTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(ConfigFrame , FadeInfo , {
-				BackgroundTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(UIStroke_2 , FadeInfo , {
-				Transparency = 1
-			})
-
-			NeverLose.PlayAnimate(ConfigIcon , FadeInfo , {
-				TextTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(LineFrame_4 , FadeInfo , {
-				BackgroundTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(ConfigName , FadeInfo , {
-				TextTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(ConfigBthIcon , FadeInfo , {
-				TextTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(SearchIcon , FadeInfo , {
-				TextTransparency = 1
-			})
-
-			NeverLose.PlayAnimate(SearchBox , FadeInfo , {
-				TextTransparency = 1
-			})
-
-			Window.Shadow:Render(false);
-		end;
+		Window.Shadow:Render(false);
 	end);
 
 	Window.Shadow = NeverLose:CreateShadow(WindowFrame);
