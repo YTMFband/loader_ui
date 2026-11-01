@@ -1951,11 +1951,11 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 		if value then
 			SetPosition();
 
-			NeverLose.PlayAnimate(OptionHandler , SlowyTween , {
+			NeverLose.PlayAnimate(OptionHandler , FadeInfo , {
 				BackgroundTransparency = 0.035
 			})
 
-			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
+			NeverLose.PlayAnimate(UIStroke , FadeInfo , {
 				Transparency = 0.650
 			})
 
@@ -1978,11 +1978,11 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 				end;
 			end));
 		else
-			NeverLose.PlayAnimate(OptionHandler , SlowyTween , {
+			NeverLose.PlayAnimate(OptionHandler , FadeInfo , {
 				BackgroundTransparency = 1
 			})
 
-			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
+			NeverLose.PlayAnimate(UIStroke , FadeInfo , {
 				Transparency = 1
 			})
 
@@ -7793,7 +7793,7 @@ function NeverLose:CreateWindow(Config)
 
 	local renderParentWindow = LPH_NO_VIRTUALIZE(function()
 		if Window.__3DRender then
-			if WindowFrame.BackgroundTransparency > 0.9 then
+			if WindowFrame.BackgroundTransparency > 0.999 then
 				WindowFrame.Visible = false;
 				WindowFrame.Parent = nil
 			else
@@ -7806,7 +7806,7 @@ function NeverLose:CreateWindow(Config)
 				WindowFrame.Parent = Window.SurfaceGui;
 			end;
 		else
-			if WindowFrame.BackgroundTransparency > 0.9 then
+			if WindowFrame.BackgroundTransparency > 0.999 then
 				WindowFrame.Visible = false;
 				WindowFrame.Parent = nil
 			else
@@ -7822,6 +7822,11 @@ function NeverLose:CreateWindow(Config)
 
 	-- все дочерние элементы окна гаснут и появляются одним твином вместе с окном
 	-- FadeCache = снимок значений в момент закрытия (nil, пока окно открыто)
+	local FadeInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out);
+	local WinScale = Instance.new("UIScale");
+	WinScale.Scale = 1;
+	WinScale.Parent = WindowFrame;
+
 	local FadeCache = nil;
 	local FadeProps = {
 		Frame = { 'BackgroundTransparency' },
@@ -7835,6 +7840,9 @@ function NeverLose:CreateWindow(Config)
 
 	local function windowFade(visible)
 		if visible then
+			WinScale.Scale = 0.95;
+			NeverLose.PlayAnimate(WinScale , FadeInfo , { Scale = 1 });
+
 			if not FadeCache then
 				return;
 			end;
@@ -7845,7 +7853,7 @@ function NeverLose:CreateWindow(Config)
 					for p , v in next , cache do
 						goal[p] = v;
 					end;
-					NeverLose.PlayAnimate(obj , SlowyTween , goal);
+					NeverLose.PlayAnimate(obj , FadeInfo , goal);
 				end;
 			end;
 
@@ -7864,6 +7872,8 @@ function NeverLose:CreateWindow(Config)
 
 		FadeCache = {};
 
+		NeverLose.PlayAnimate(WinScale , FadeInfo , { Scale = 0.95 });
+
 		for _ , obj in ipairs(WindowFrame:GetDescendants()) do
 			local props = FadeProps[obj.ClassName];
 
@@ -7877,7 +7887,7 @@ function NeverLose:CreateWindow(Config)
 				end;
 
 				FadeCache[obj] = cache;
-				NeverLose.PlayAnimate(obj , SlowyTween , goal);
+				NeverLose.PlayAnimate(obj , FadeInfo , goal);
 			end;
 		end;
 	end;
