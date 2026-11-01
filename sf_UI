@@ -8219,7 +8219,7 @@ function NeverLose:CreateWindow(Config)
 	local HeaderBadge = Instance.new("TextLabel");
 	HeaderBadge.Name = NeverLose.RandomString();
 	HeaderBadge.AnchorPoint = Vector2.new(1, 0.5);
-	HeaderBadge.Position = UDim2.new(1, -10, 0.5, 0);
+	HeaderBadge.Position = UDim2.new(1, -10, 0, 16);
 	HeaderBadge.Size = UDim2.new(0, 90, 0, 16);
 	HeaderBadge.BackgroundTransparency = 1;
 	HeaderBadge.Font = Enum.Font.GothamMedium;
