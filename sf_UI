@@ -8837,7 +8837,7 @@ function NeverLose:CreateWindow(Config)
 				})
 
 				NeverLose.PlayAnimate(TabOutline , SlowyTween , {
-					BackgroundTransparency = 0.4
+					BackgroundTransparency = 0.2
 				})
 
 				NeverLose.PlayAnimate(TabIcon , SlowyTween , {
