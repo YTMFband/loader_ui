@@ -2378,12 +2378,15 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 		local Toggle = Instance.new("Frame")
 		local UICorner = Instance.new("UICorner")
+		local TrackGradient = Instance.new("UIGradient")
+		local TrackStroke = Instance.new("UIStroke")
 		local Circle = Instance.new("Frame")
 		local UICorner_2 = Instance.new("UICorner")
+		local CircleGradient = Instance.new("UIGradient")
 
 		Toggle.Name = NeverLose.RandomString();
 		Toggle.Parent = Handler
-		Toggle.BackgroundColor3 = NeverLose.Theme.Deep
+		Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- цвет даёт градиент
 		Toggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Toggle.BorderSizePixel = 0
 		Toggle.ClipsDescendants = true
@@ -2394,11 +2397,20 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		UICorner.CornerRadius = UDim.new(1, 0)
 		UICorner.Parent = Toggle
 
+		TrackGradient.Rotation = 90
+		TrackGradient.Parent = Toggle
+
+		-- тонкая сплошная обводка трека (вместо полупрозрачной)
+		TrackStroke.Thickness = 1
+		TrackStroke.Color = NeverLose.Theme.Stroke
+		TrackStroke.Transparency = 0
+		TrackStroke.Parent = Toggle
+
 		Circle.Name = NeverLose.RandomString();
 		Circle.Parent = Toggle
 		Circle.AnchorPoint = Vector2.new(0.5, 0.5)
 		Circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		Circle.BackgroundTransparency = 0.500
+		Circle.BackgroundTransparency = 0
 		Circle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Circle.BorderSizePixel = 0
 		Circle.Position = UDim2.new(0.300000012, 0, 0.5, 0)
@@ -2408,15 +2420,32 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		UICorner_2.CornerRadius = UDim.new(1, 0)
 		UICorner_2.Parent = Circle
 
+		CircleGradient.Rotation = 90
+		CircleGradient.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(217, 220, 230))
+		CircleGradient.Parent = Circle
+
+		-- градиенты берутся из темы и акцента при каждом переключении
+		local function offTrack()
+			return ColorSequence.new(NeverLose.Theme.Deep:Lerp(Color3.new(1, 1, 1), 0.06), NeverLose.Theme.Deep)
+		end
+
+		local function onTrack()
+			return ColorSequence.new(NeverLose.AccentColor:Lerp(Color3.new(1, 1, 1), 0.35), NeverLose.AccentColor:Lerp(Color3.new(0, 0, 0), 0.2))
+		end
+
 		local ToggleLib = {
-			Root = Toggle	
+			Root = Toggle
 		};
 
 		ToggleLib.SetUI = LPH_NO_VIRTUALIZE(function(value)
 			if value then
+				TrackGradient.Color = onTrack()
 				NeverLose.PlayAnimate(Toggle,SlowyTween,{
-					BackgroundTransparency = 0,
-					BackgroundColor3 = NeverLose.AccentColor
+					BackgroundTransparency = 0
+				})
+				NeverLose.PlayAnimate(TrackStroke,SlowyTween,{
+					Color = NeverLose.AccentColor,
+					Transparency = 0.2
 				})
 
 				NeverLose.PlayAnimate(Circle,SlowyTween,{
@@ -2425,14 +2454,18 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 					Position = UDim2.new(0.7, 0, 0.5, 0)
 				})
 			else
+				TrackGradient.Color = offTrack()
 				NeverLose.PlayAnimate(Toggle,SlowyTween,{
-					BackgroundTransparency = 0,
-					BackgroundColor3 = NeverLose.Theme.Deep
+					BackgroundTransparency = 0
+				})
+				NeverLose.PlayAnimate(TrackStroke,SlowyTween,{
+					Color = NeverLose.Theme.Stroke,
+					Transparency = 0
 				})
 
 				NeverLose.PlayAnimate(Circle,SlowyTween,{
 					BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-					BackgroundTransparency = 0.500,
+					BackgroundTransparency = 0,
 					Position = UDim2.new(0.300000012, 0, 0.5, 0)
 				})
 			end;
@@ -2443,8 +2476,10 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 				ToggleLib.SetUI(Config.Default);
 			else
 				NeverLose.PlayAnimate(Toggle,SlowyTween,{
-					BackgroundTransparency = 1,
-					BackgroundColor3 = NeverLose.Theme.Deep
+					BackgroundTransparency = 1
+				})
+				NeverLose.PlayAnimate(TrackStroke,SlowyTween,{
+					Transparency = 1
 				})
 
 				NeverLose.PlayAnimate(Circle,SlowyTween,{
@@ -7600,7 +7635,7 @@ function NeverLose:CreateWindow(Config)
 			})
 
 			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
-				Transparency = 0.650
+				Transparency = 0.2
 			})
 
 			NeverLose.PlayAnimate(LineFrame_3 , SlowyTween , {
@@ -7968,7 +8003,7 @@ function NeverLose:CreateWindow(Config)
 	RightMenuFrame.Size = UDim2.new(1, -176, 1, 0)
 	RightMenuFrame.ZIndex = 8
 
-	UIStroke.Transparency = 0.650
+	UIStroke.Transparency = 0.2
 	UIStroke.Color = NeverLose.Theme.Stroke
 	UIStroke.Parent = RightMenuFrame
 
