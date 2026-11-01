@@ -2515,6 +2515,22 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 			Config.Callback(Config.Default)
 		end))
 
+		ToggleLib.Signal = Signal:Connect(ToggleLib.SetVisible);
+
+		function ToggleLib:GetValue()
+			return Config.Default;
+		end;
+
+		function ToggleLib:SetValue(v)
+			Config.Default = v;
+
+			if Signal:GetValue() then
+				ToggleLib.SetUI(Config.Default);
+			end;
+
+			Config.Callback(Config.Default)
+		end;
+
 		if Config.Flag then
 			NeverLose.Flags[Config.Flag] = ToggleLib;
 		end;
@@ -7804,7 +7820,50 @@ function NeverLose:CreateWindow(Config)
 
 	NeverLose:AddSignal(WindowFrame:GetPropertyChangedSignal('BackgroundTransparency'):Connect(renderParentWindow))
 
+	-- все дочерние элементы окна гаснут и появляются одним твином вместе с окном (иначе остаются полупрозрачные куски)
+	local FadeCache = {};
+	local FadeProps = {
+		Frame = { 'BackgroundTransparency' },
+		ScrollingFrame = { 'BackgroundTransparency' },
+		TextLabel = { 'BackgroundTransparency' , 'TextTransparency' },
+		TextButton = { 'BackgroundTransparency' , 'TextTransparency' },
+		ImageLabel = { 'BackgroundTransparency' , 'ImageTransparency' },
+		ImageButton = { 'BackgroundTransparency' , 'ImageTransparency' },
+		UIStroke = { 'Transparency' },
+	};
+
+	local function windowFade(visible)
+		local skip = { [WindowFrame] = true };
+		for _ , h in ipairs(Window.HeaderBgs or {}) do
+			skip[h] = true;
+		end;
+
+		for _ , obj in ipairs(WindowFrame:GetDescendants()) do
+			local props = FadeProps[obj.ClassName];
+
+			if props and not skip[obj] then
+				local cache = FadeCache[obj] or {};
+				FadeCache[obj] = cache;
+				local goal = {};
+
+				for _ , p in ipairs(props) do
+					if visible then
+						goal[p] = cache[p] or obj[p];
+					else
+						if cache[p] == nil then
+							cache[p] = obj[p];
+						end;
+						goal[p] = 1;
+					end;
+				end;
+
+				NeverLose.PlayAnimate(obj , SlowyTween , goal);
+			end;
+		end;
+	end;
+
 	Window.SetRender = LPH_NO_VIRTUALIZE(function(self , value)
+		windowFade(value);
 		if value then
 			NeverLose.PlayAnimate(WindowFrame , SlowyTween , {
 				BackgroundTransparency = (NeverLose.EnabledBlur and 0.055) or 0.0255
