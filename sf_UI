@@ -7821,13 +7821,7 @@ function NeverLose:CreateWindow(Config)
 	NeverLose:AddSignal(WindowFrame:GetPropertyChangedSignal('BackgroundTransparency'):Connect(renderParentWindow))
 
 	-- все дочерние элементы окна гаснут и появляются одним твином вместе с окном
-	-- FadeCache = снимок значений в момент закрытия (nil, пока окно открыто)
 	local FadeInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out);
-	local WinScale = Instance.new("UIScale");
-	WinScale.Scale = 1;
-	WinScale.Parent = WindowFrame;
-
-	local FadeCache = nil;
 	local FadeProps = {
 		Frame = { 'BackgroundTransparency' },
 		ScrollingFrame = { 'BackgroundTransparency' },
@@ -7838,55 +7832,76 @@ function NeverLose:CreateWindow(Config)
 		UIStroke = { 'Transparency' },
 	};
 
-	local function windowFade(visible)
-		if visible then
-			WinScale.Scale = 0.95;
-			NeverLose.PlayAnimate(WinScale , FadeInfo , { Scale = 1 });
+	local FadeSnap = nil;   -- значения элементов, когда окно полностью открыто
+	local FadeOpenAt = 0;   -- когда окно последний раз начало открываться
+	local Faded = false;    -- true, пока окно закрыто или закрывается
 
-			if not FadeCache then
-				return;
-			end;
-
-			for obj , cache in next , FadeCache do
-				if obj.Parent then
-					local goal = {};
-					for p , v in next , cache do
-						goal[p] = v;
-					end;
-					NeverLose.PlayAnimate(obj , FadeInfo , goal);
-				end;
-			end;
-
-			FadeCache = nil;
-			return;
-		end;
-
-		if FadeCache then
-			return; -- уже закрыто, второй снимок не делаем
-		end;
-
-		local skip = { [WindowFrame] = true };
-		for _ , h in ipairs(Window.HeaderBgs or {}) do
-			skip[h] = true;
-		end;
-
-		FadeCache = {};
-
-		NeverLose.PlayAnimate(WinScale , FadeInfo , { Scale = 0.95 });
+	-- снимок значений по всем элементам окна (WindowFrame не трогаем: им управляет SetRender)
+	local function captureFade()
+		local snap = {};
 
 		for _ , obj in ipairs(WindowFrame:GetDescendants()) do
 			local props = FadeProps[obj.ClassName];
 
-			if props and not skip[obj] then
-				local cache = {};
+			if props and obj ~= WindowFrame then
+				local v = {};
+
+				for _ , p in ipairs(props) do
+					v[p] = obj[p];
+				end;
+
+				snap[obj] = v;
+			end;
+		end;
+
+		return snap;
+	end;
+
+	local function windowFade(visible)
+		if visible then
+			if not Faded then
+				return;
+			end;
+
+			Faded = false;
+			FadeOpenAt = os.clock();
+
+			for obj , cache in next , FadeSnap or {} do
+				if obj.Parent then
+					local goal = {};
+
+					for p , v in next , cache do
+						goal[p] = v;
+					end;
+
+					NeverLose.PlayAnimate(obj , FadeInfo , goal);
+				end;
+			end;
+
+			return;
+		end;
+
+		if Faded then
+			return;
+		end;
+
+		-- снимок делаем только когда окно уже открылось полностью, иначе берём прошлый
+		if (not FadeSnap) or (os.clock() - FadeOpenAt >= 0.4) then
+			FadeSnap = captureFade();
+		end;
+
+		Faded = true;
+
+		for _ , obj in ipairs(WindowFrame:GetDescendants()) do
+			local props = FadeProps[obj.ClassName];
+
+			if props and obj ~= WindowFrame then
 				local goal = {};
 
 				for _ , p in ipairs(props) do
-					cache[p] = obj[p];
 					goal[p] = 1;
 				end;
 
-				FadeCache[obj] = cache;
 				NeverLose.PlayAnimate(obj , FadeInfo , goal);
 			end;
 		end;
