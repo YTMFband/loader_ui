@@ -6126,6 +6126,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 			ZIndex = Z + 10,
 		} , SlideMain);
 		make('UICorner' , { CornerRadius = UDim.new(0 , S(8)) } , SlideMoving);
+		make('UISizeConstraint' , { MinSize = Vector2.new(S(14) , 0) } , SlideMoving);
 
 		-- режим Plain: градиент акцента со светлым верхним краем, скруглён с обоих концов, без полоски
 		local PlainGrad = nil;
