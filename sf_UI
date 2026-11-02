@@ -6126,7 +6126,6 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 			ZIndex = Z + 10,
 		} , SlideMain);
 		make('UICorner' , { CornerRadius = UDim.new(0 , S(8)) } , SlideMoving);
-		local SlideMinC = make('UISizeConstraint' , { MinSize = Vector2.new(0 , 0) } , SlideMoving);
 
 		-- режим Plain: градиент акцента со светлым верхним краем, скруглён с обоих концов, без полоски
 		local PlainGrad = nil;
@@ -6184,7 +6183,6 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		local function apply(value , fire)
 			Config.Default = value;
 
-			SlideMinC.MinSize = Vector2.new((value > Config.Min) and S(14) or 0 , 0);
 			TweenService:Create(SlideMoving , ManualTween , { Size = UDim2.new(scale() , 0 , 1 , 0) }):Play();
 
 			loadText();
