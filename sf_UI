@@ -267,6 +267,23 @@ NeverLose.StartedAt = os.clock();
 -- ТЕМЫ: цвета интерфейса берутся из ролей NeverLose.Theme
 -- NeverLose:SetTheme('One Dark')  /  NeverLose:SetTheme({ Accent = Color3.fromRGB(255, 80, 120) })
 NeverLose.Themes = {
+	['NullOrbit'] = {
+		Main = Color3.fromRGB(11, 11, 14),
+		Card = Color3.fromRGB(21, 22, 27),
+		Elem = Color3.fromRGB(30, 32, 38),
+		Elem2 = Color3.fromRGB(36, 38, 46),
+		Hover = Color3.fromRGB(30, 32, 38),
+		Field = Color3.fromRGB(30, 32, 38),
+		Deep = Color3.fromRGB(11, 11, 14),
+		Deep2 = Color3.fromRGB(8, 8, 10),
+		Track = Color3.fromRGB(42, 44, 52),
+		Stroke = Color3.fromRGB(42, 44, 52),
+		Text = Color3.fromRGB(242, 242, 244),
+		Icon = Color3.fromRGB(242, 242, 244),
+		TextDim = Color3.fromRGB(154, 156, 166),
+		TextMute = Color3.fromRGB(110, 112, 122),
+		Accent = Color3.fromRGB(242, 242, 244),
+	},
 	['NeverLose'] = {
 		Main = Color3.fromRGB(8, 8, 13),
 		Card = Color3.fromRGB(20, 22, 27),
@@ -593,9 +610,9 @@ NeverLose.Themes = {
 };
 
 NeverLose.Theme = {};
-NeverLose.CurrentTheme = 'NeverLose';
+NeverLose.CurrentTheme = 'NullOrbit';
 
-for k , v in next , NeverLose.Themes['NeverLose'] do
+for k , v in next , NeverLose.Themes[NeverLose.CurrentTheme] do
 	NeverLose.Theme[k] = v;
 end;
 
@@ -6109,7 +6126,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 			ZIndex = Z + 10,
 		} , SlideMain);
 		make('UICorner' , { CornerRadius = UDim.new(0 , S(8)) } , SlideMoving);
-		make('UISizeConstraint' , { MinSize = Vector2.new(S(14) , 0) } , SlideMoving);
+		local SlideMinC = make('UISizeConstraint' , { MinSize = Vector2.new(0 , 0) } , SlideMoving);
 
 		-- режим Plain: градиент акцента со светлым верхним краем, скруглён с обоих концов, без полоски
 		local PlainGrad = nil;
@@ -6167,6 +6184,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		local function apply(value , fire)
 			Config.Default = value;
 
+			SlideMinC.MinSize = Vector2.new((value > Config.Min) and S(14) or 0 , 0);
 			TweenService:Create(SlideMoving , ManualTween , { Size = UDim2.new(scale() , 0 , 1 , 0) }):Play();
 
 			loadText();
@@ -8382,7 +8400,7 @@ function NeverLose:CreateWindow(Config)
 
 		TabButton.Name = NeverLose.RandomString();
 		TabButton.Parent = LeftScrollingFrame
-		TabButton.BackgroundColor3 = Color3.fromRGB(41, 45, 49)
+		TabButton.BackgroundColor3 = NeverLose.Theme.Hover
 		TabButton.BackgroundTransparency = 0.500
 		TabButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		TabButton.BorderSizePixel = 0
