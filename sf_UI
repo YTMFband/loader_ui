@@ -6020,8 +6020,11 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		-- размер текста не масштабируется: Size меняет только геометрию
 		local NameSize = 13;
 		local ValText = 10;
-		local ValH = S(18);
-		local BarY = S(26);
+		-- высоты не меньше текста: при маленьком Size текст не выходит за свою строку
+		local NameH = math.max(S(16) , NameSize + 4);
+		local ValH = math.max(S(18) , ValText + 6);
+		local NameY = S(4);
+		local BarY = NameY + NameH + S(5);
 		local BarH = S(26);
 		local RootH = BarY + BarH + S(6);
 
@@ -6065,8 +6068,8 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 
 		local NameLabel = make('TextLabel' , {
 			BackgroundTransparency = 1,
-			Position = UDim2.new(0 , 11 , 0 , S(5)),
-			Size = UDim2.new(1 , -(ValueW + 30) , 0 , S(16)),
+			Position = UDim2.new(0 , 11 , 0 , NameY),
+			Size = UDim2.new(1 , -(ValueW + 30) , 0 , NameH),
 			ZIndex = Z + 9,
 			Font = Enum.Font.GothamMedium,
 			Text = Config.Name,
@@ -6090,7 +6093,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		local ValueFrame = make('Frame' , {
 			AnchorPoint = Vector2.new(1 , 0),
 			BackgroundColor3 = NeverLose.Theme.Field,
-			Position = UDim2.new(1 , -11 , 0 , S(4)),
+			Position = UDim2.new(1 , -11 , 0 , NameY + math.floor((NameH - ValH) / 2)),
 			Size = UDim2.new(0 , ValueW , 0 , ValH),
 			ZIndex = Z + 10,
 		} , Root);
