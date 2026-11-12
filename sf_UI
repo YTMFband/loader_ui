@@ -282,7 +282,7 @@ NeverLose.Themes = {
 		Icon = Color3.fromRGB(242, 242, 244),
 		TextDim = Color3.fromRGB(154, 156, 166),
 		TextMute = Color3.fromRGB(110, 112, 122),
-		Accent = Color3.fromRGB(242, 242, 244),
+		Accent = Color3.fromRGB(159, 182, 214),
 	},
 	['NeverLose'] = {
 		Main = Color3.fromRGB(8, 8, 13),
@@ -2403,7 +2403,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 		Toggle.Name = NeverLose.RandomString();
 		Toggle.Parent = Handler
-		Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255) -- цвет даёт градиент
+		Toggle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 		Toggle.BorderColor3 = Color3.fromRGB(0, 0, 0)
 		Toggle.BorderSizePixel = 0
 		Toggle.ClipsDescendants = true
@@ -2417,7 +2417,6 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		TrackGradient.Rotation = 90
 		TrackGradient.Parent = Toggle
 
-		-- тонкая сплошная обводка трека (вместо полупрозрачной)
 		TrackStroke.Thickness = 1
 		TrackStroke.Color = NeverLose.Theme.Stroke
 		TrackStroke.Transparency = 0
@@ -2441,9 +2440,24 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		CircleGradient.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(217, 220, 230))
 		CircleGradient.Parent = Circle
 
-		-- градиенты берутся из темы и акцента при каждом переключении
+		local CircleEdge = Instance.new("UIStroke");
+		CircleEdge.Thickness = 1;
+		CircleEdge.Color = Color3.fromRGB(0, 0, 0);
+		CircleEdge.Transparency = 0.6;
+		CircleEdge.Parent = Circle;
+
+		local TrackGloss = Instance.new("Frame");
+		TrackGloss.Name = NeverLose.RandomString();
+		TrackGloss.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+		TrackGloss.BackgroundTransparency = 0.92;
+		TrackGloss.BorderSizePixel = 0;
+		TrackGloss.Position = UDim2.new(0, 6, 0, 1);
+		TrackGloss.Size = UDim2.new(1, -12, 0, 1);
+		TrackGloss.ZIndex = ZINdex + 12;
+		TrackGloss.Parent = Toggle;
+
 		local function offTrack()
-			return ColorSequence.new(NeverLose.Theme.Deep:Lerp(Color3.new(1, 1, 1), 0.06), NeverLose.Theme.Deep)
+			return ColorSequence.new(NeverLose.Theme.Elem:Lerp(Color3.new(1, 1, 1), 0.05), NeverLose.Theme.Deep)
 		end
 
 		local function onTrack()
@@ -6020,7 +6034,6 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		-- размер текста не масштабируется: Size меняет только геометрию
 		local NameSize = 13;
 		local ValText = 10;
-		-- высоты не меньше текста: при маленьком Size текст не выходит за свою строку
 		local NameH = math.max(S(16) , NameSize + 4);
 		local ValH = math.max(S(18) , ValText + 6);
 		local NameY = S(4);
@@ -6128,7 +6141,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 			Size = UDim2.new(scale() , 0 , 1 , 0),
 			ZIndex = Z + 10,
 		} , SlideMain);
-		make('UICorner' , { CornerRadius = UDim.new(1 , 0) } , SlideMoving); -- относительное скругление, как в AddSlider
+		make('UICorner' , { CornerRadius = UDim.new(1 , 0) } , SlideMoving);
 		make('UISizeConstraint' , { MinSize = Vector2.new(S(14) , 0) } , SlideMoving);
 
 		-- режим Plain: градиент акцента со светлым верхним краем, скруглён с обоих концов, без полоски
@@ -6312,7 +6325,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 
 		local Z = LayerIndex;
 		local Lib = {};
-		local HasDesc = type(Config.Description) == 'string' and Config.Description ~= '';
+		local HasDesc = false;
 		local RowH = HasDesc and 48 or 36;
 
 		local function make(class , props , parent)
@@ -6695,12 +6708,22 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		BoxFrame.Size = UDim2.new(1 , 0 , 0 , 0);
 		BoxFrame.ZIndex = LayerIndex;
 
-		BoxLayout.Parent = BoxFrame;
+		local Inner = Instance.new('Frame');
+		Inner.Name = NeverLose.RandomString();
+		Inner.Parent = BoxFrame;
+		Inner.BackgroundTransparency = 1;
+		Inner.BorderSizePixel = 0;
+		Inner.AutomaticSize = Enum.AutomaticSize.Y;
+		Inner.Position = UDim2.new(0 , 12 , 0 , 0);
+		Inner.Size = UDim2.new(1 , -12 , 0 , 0);
+		Inner.ZIndex = LayerIndex;
+
+		BoxLayout.Parent = Inner;
 		BoxLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center;
 		BoxLayout.SortOrder = Enum.SortOrder.LayoutOrder;
 
 		-- внутри бокса работают все те же Add* (AddLabel, AddToggle, AddSlider, AddDropdown, вложенные боксы...)
-		local Box = NeverLose:RegisiterItem(BoxFrame , Signel);
+		local Box = NeverLose:RegisiterItem(Inner , Signel);
 		local Dependencies = {};
 
 		Box.Root = BoxFrame;
@@ -7655,7 +7678,7 @@ function NeverLose:CreateWindow(Config)
 			})
 
 			NeverLose.PlayAnimate(UIStroke , SlowyTween , {
-				Transparency = 0.2
+				Transparency = 1
 			})
 
 			NeverLose.PlayAnimate(LineFrame_3 , SlowyTween , {
@@ -7876,6 +7899,7 @@ function NeverLose:CreateWindow(Config)
 	WindowContent.ZIndex = 7
 	WindowContent.Font = Enum.Font.GothamBold
 	WindowContent.Text = Window.Content
+	WindowContent.Visible = false;
 	WindowContent.TextColor3 = NeverLose.Theme.Text
 	WindowContent.TextSize = 9.000
 	WindowContent.TextTransparency = 0.650
@@ -8023,7 +8047,7 @@ function NeverLose:CreateWindow(Config)
 	RightMenuFrame.Size = UDim2.new(1, -176, 1, 0)
 	RightMenuFrame.ZIndex = 8
 
-	UIStroke.Transparency = 0.2
+	UIStroke.Transparency = 1
 	UIStroke.Color = NeverLose.Theme.Stroke
 	UIStroke.Parent = RightMenuFrame
 
