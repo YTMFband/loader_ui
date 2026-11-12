@@ -6718,6 +6718,23 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		Inner.Size = UDim2.new(1 , -12 , 0 , 0);
 		Inner.ZIndex = LayerIndex;
 
+		local DepLine = Instance.new('Frame');
+		DepLine.Name = NeverLose.RandomString();
+		DepLine.Parent = BoxFrame;
+		DepLine.BackgroundColor3 = Color3.fromRGB(58 , 62 , 75);
+		DepLine.BackgroundTransparency = 0;
+		DepLine.BorderSizePixel = 0;
+		DepLine.Position = UDim2.new(0 , 4 , 0 , 0);
+		DepLine.Size = UDim2.new(0 , 1 , 0 , 0);
+		DepLine.ZIndex = LayerIndex;
+
+		local function SyncDepLine()
+			DepLine.Size = UDim2.new(0 , 1 , 0 , Inner.AbsoluteSize.Y);
+		end;
+
+		NeverLose:AddSignal(Inner:GetPropertyChangedSignal('AbsoluteSize'):Connect(SyncDepLine));
+		SyncDepLine();
+
 		BoxLayout.Parent = Inner;
 		BoxLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center;
 		BoxLayout.SortOrder = Enum.SortOrder.LayoutOrder;
