@@ -5316,14 +5316,14 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		local function FieldSeq()
 			local base = (NeverLose.Theme and NeverLose.Theme.Field) or Color3.fromRGB(26 , 28 , 36);
 
-			return ColorSequence.new(base:Lerp(Color3.new(1 , 1 , 1) , 0.07) , base);
+			return ColorSequence.new(base);
 		end;
 
 		local FieldGrad = make('UIGradient' , { Color = FieldSeq(), Rotation = 90 } , Field);
 
 		make('Frame' , {
 			BackgroundColor3 = Color3.fromRGB(255 , 255 , 255),
-			BackgroundTransparency = 0.88,
+			BackgroundTransparency = 1,
 			Position = UDim2.new(0 , S(4) , 0 , 1),
 			Size = UDim2.new(1 , -S(8) , 0 , 1),
 			ZIndex = Z + 11,
@@ -6727,6 +6727,16 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		DepLine.Position = UDim2.new(0 , 4 , 0 , 0);
 		DepLine.Size = UDim2.new(0 , 1 , 0 , 0);
 		DepLine.ZIndex = LayerIndex;
+
+		local DepTick = Instance.new('Frame');
+		DepTick.Name = NeverLose.RandomString();
+		DepTick.Parent = BoxFrame;
+		DepTick.BackgroundColor3 = Color3.fromRGB(58 , 62 , 75);
+		DepTick.BackgroundTransparency = 0;
+		DepTick.BorderSizePixel = 0;
+		DepTick.Position = UDim2.new(0 , 4 , 0 , 11);
+		DepTick.Size = UDim2.new(0 , 8 , 0 , 1);
+		DepTick.ZIndex = LayerIndex;
 
 		local function SyncDepLine()
 			DepLine.Size = UDim2.new(0 , 1 , 0 , Inner.AbsoluteSize.Y);
