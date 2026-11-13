@@ -4653,7 +4653,7 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 	local idx = {};
 	local LayerIndex = Frame.ZIndex;
 
-	function idx:AddLabel(Name: string,Warp: boolean)
+	function idx:AddLabel(Name: string,Warp: boolean,Tip: string)
 		local BasedFrame = Instance.new("Frame")
 		local BasedLabel = Instance.new("TextLabel")
 		local LineFrame = Instance.new("Frame")
@@ -4689,6 +4689,74 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 		BasedLabel.TextTransparency = 0.35
 		BasedLabel.TextXAlignment = Enum.TextXAlignment.Left
 		--BasedLabel.AutomaticSize = Enum.AutomaticSize.X
+
+		if type(Tip) == 'string' and Tip ~= '' then
+			local TextW = NeverLose.GetTextSize(Name , 13 , Enum.Font.GothamMedium , Vector2.new(math.huge , math.huge)).X;
+
+			local Q = Instance.new('TextButton');
+			Q.Name = NeverLose.RandomString();
+			Q.Parent = BasedFrame;
+			Q.BackgroundColor3 = NeverLose.Theme.Field;
+			Q.BackgroundTransparency = 0.2;
+			Q.BorderSizePixel = 0;
+			Q.AutoButtonColor = false;
+			Q.Position = UDim2.new(0 , 11 + TextW + 6 , 0 , 8);
+			Q.Size = UDim2.new(0 , 14 , 0 , 14);
+			Q.Font = Enum.Font.GothamBold;
+			Q.Text = '?';
+			Q.TextSize = 10;
+			Q.TextColor3 = NeverLose.Theme.TextMute;
+			Q.ZIndex = LayerIndex + 10;
+
+			local QCorner = Instance.new('UICorner');
+			QCorner.CornerRadius = UDim.new(1 , 0);
+			QCorner.Parent = Q;
+
+			local QStroke = Instance.new('UIStroke');
+			QStroke.Color = NeverLose.Theme.Stroke;
+			QStroke.Transparency = 0.2;
+			QStroke.Parent = Q;
+
+			local TipFrame = Instance.new('TextLabel');
+			TipFrame.Name = NeverLose.RandomString();
+			TipFrame.Parent = BasedFrame;
+			TipFrame.Visible = false;
+			TipFrame.BackgroundColor3 = NeverLose.Theme.Elem2;
+			TipFrame.BackgroundTransparency = 0;
+			TipFrame.BorderSizePixel = 0;
+			TipFrame.Position = UDim2.new(0 , 11 , 1 , 4);
+			TipFrame.Size = UDim2.new(0 , 230 , 0 , 0);
+			TipFrame.AutomaticSize = Enum.AutomaticSize.Y;
+			TipFrame.Font = Enum.Font.GothamMedium;
+			TipFrame.Text = Tip;
+			TipFrame.TextColor3 = NeverLose.Theme.Text;
+			TipFrame.TextSize = 11;
+			TipFrame.TextWrapped = true;
+			TipFrame.TextXAlignment = Enum.TextXAlignment.Left;
+			TipFrame.TextYAlignment = Enum.TextYAlignment.Top;
+			TipFrame.ZIndex = LayerIndex + 30;
+
+			local TipPad = Instance.new('UIPadding');
+			TipPad.PaddingLeft = UDim.new(0 , 8);
+			TipPad.PaddingRight = UDim.new(0 , 8);
+			TipPad.PaddingTop = UDim.new(0 , 6);
+			TipPad.PaddingBottom = UDim.new(0 , 6);
+			TipPad.Parent = TipFrame;
+
+			local TipCorner = Instance.new('UICorner');
+			TipCorner.CornerRadius = UDim.new(0 , 6);
+			TipCorner.Parent = TipFrame;
+
+			NeverLose:AddSignal(Q.MouseEnter:Connect(function()
+				TipFrame.Visible = true;
+				Q.TextColor3 = NeverLose.AccentColor;
+			end));
+
+			NeverLose:AddSignal(Q.MouseLeave:Connect(function()
+				TipFrame.Visible = false;
+				Q.TextColor3 = NeverLose.Theme.TextMute;
+			end));
+		end;
 
 		LineFrame.Name = NeverLose.RandomString();
 		LineFrame.Parent = BasedFrame
@@ -5189,7 +5257,8 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 			Name = 'Dropdown',
 			Values = {},
 			Default = nil,
-			Multi = false,
+Multi = false,
+			Sort = false,
 			Search = true,         -- поле поиска вверху списка
 			MaxVisible = 6,        -- сколько пунктов видно без прокрутки
 			CloseOnSelect = true,  -- одиночный выбор сразу закрывает список
@@ -5467,7 +5536,35 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 			return d == value;
 		end;
 
+local SelOrder = {};
+
+		local function rebuildOrder()
+			SelOrder = {};
+			if Config.Multi and type(Config.Default) == 'table' then
+				for _ , v in next , Config.Values do
+					if Config.Default[v] then
+						table.insert(SelOrder , v);
+					end;
+				end;
+			end;
+		end;
+
+		rebuildOrder();
+
 		local function valueText()
+			if Config.Sort and Config.Multi and type(Config.Default) == 'table' then
+				local sorted = {};
+				for _ , v in next , SelOrder do
+					if isMatch(v) then
+						table.insert(sorted , #sorted + 1 .. ' ' .. tostring(v));
+					end;
+				end;
+				if #sorted == 0 then
+					return Config.Placeholder;
+				end;
+				return table.concat(sorted , ', ');
+			end;
+
 			local d = Config.Default;
 
 			if type(d) == 'table' then
@@ -5584,10 +5681,35 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 					TextTransparency = 1,
 				} , ItemFrame);
 
+				local Num = make('TextLabel' , {
+					AnchorPoint = Vector2.new(1 , 0.5),
+					BackgroundTransparency = 1,
+					Position = UDim2.new(1 , -S(6) , 0.5 , 0),
+					Size = UDim2.new(0 , S(18) , 0 , S(18)),
+					ZIndex = Z + 13,
+					Font = Enum.Font.GothamBold,
+					Text = '',
+					TextColor3 = NeverLose.AccentColor,
+					TextSize = 11,
+					TextTransparency = 1,
+				} , ItemFrame);
+
 				local it = { Frame = ItemFrame , Value = Value };
 
 				function it.mark()
 					local on = isMatch(Value);
+
+					if Config.Sort and Config.Multi then
+						local num = '';
+						for i , v in next , SelOrder do
+							if v == Value then
+								num = tostring(i);
+							end;
+						end;
+						NeverLose.PlayAnimate(Num , SlowyTween , { Text = on and num or '' , TextTransparency = on and 0 or 1 });
+						NeverLose.PlayAnimate(Check , SlowyTween , { TextTransparency = 1 });
+						return;
+					end;
 
 					NeverLose.PlayAnimate(ItemLabel , SlowyTween , {
 						TextTransparency = on and 0.1 or 0.5,
@@ -5610,7 +5732,18 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 
 				local _ , bth = NeverLose:CreateInput(ItemFrame , function()
 					if Config.Multi then
-						Config.Default[Value] = not Config.Default[Value];
+Config.Default[Value] = not Config.Default[Value];
+						if Config.Default[Value] then
+							if not table.find(SelOrder , Value) then
+								table.insert(SelOrder , Value);
+							end;
+						else
+							for k = #SelOrder , 1 , -1 do
+								if SelOrder[k] == Value then
+									table.remove(SelOrder , k);
+								end;
+							end;
+						end;
 						it.mark();
 					else
 						Config.Default = Value;
@@ -5688,7 +5821,8 @@ function NeverLose:RegisiterItem(Frame: Frame , Signel)
 				v = (v ~= nil) and { [v] = true } or {};
 			end;
 
-			Config.Default = v;
+Config.Default = v;
+			rebuildOrder();
 
 			updateText();
 
