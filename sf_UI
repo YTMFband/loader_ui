@@ -2412,6 +2412,8 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		Q.Text = '?';
 		Q.TextSize = 10;
 		Q.TextColor3 = NeverLose.Theme.TextMute;
+		Q.TextXAlignment = Enum.TextXAlignment.Center;
+		Q.TextYAlignment = Enum.TextYAlignment.Center;
 		Q.ZIndex = Lbl.ZIndex + 1;
 
 		local QCorner = Instance.new('UICorner');
@@ -2430,8 +2432,8 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		TipFrame.BackgroundColor3 = NeverLose.Theme.Elem2;
 		TipFrame.BackgroundTransparency = 0;
 		TipFrame.BorderSizePixel = 0;
-		TipFrame.Position = UDim2.new(0 , Lbl.Position.X.Offset , 1 , 4);
-		TipFrame.Size = UDim2.new(0 , 230 , 0 , 0);
+		TipFrame.Position = UDim2.new(0 , 11 , 1 , 4);
+		TipFrame.Size = UDim2.new(1 , -22 , 0 , 0);
 		TipFrame.AutomaticSize = Enum.AutomaticSize.Y;
 		TipFrame.Font = Enum.Font.GothamMedium;
 		TipFrame.Text = Tip;
