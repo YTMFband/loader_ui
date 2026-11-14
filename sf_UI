@@ -2427,7 +2427,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 		local TipFrame = Instance.new('TextLabel');
 		TipFrame.Name = NeverLose.RandomString();
-		TipFrame.Parent = Row;
+		TipFrame.Parent = NeverLose.ScreenGui;
 		TipFrame.Visible = false;
 		TipFrame.BackgroundColor3 = NeverLose.Theme.Elem2;
 		TipFrame.BackgroundTransparency = 0;
@@ -2442,7 +2442,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		TipFrame.TextWrapped = true;
 		TipFrame.TextXAlignment = Enum.TextXAlignment.Left;
 		TipFrame.TextYAlignment = Enum.TextYAlignment.Top;
-		TipFrame.ZIndex = Lbl.ZIndex + 20;
+		TipFrame.ZIndex = 500;
 
 		local TipPad = Instance.new('UIPadding');
 		TipPad.PaddingLeft = UDim.new(0 , 8);
@@ -2456,6 +2456,8 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		TipCorner.Parent = TipFrame;
 
 		NeverLose:AddSignal(Q.MouseEnter:Connect(function()
+			TipFrame.Position = UDim2.fromOffset(Row.AbsolutePosition.X + 11 , Row.AbsolutePosition.Y + Row.AbsoluteSize.Y + 4);
+			TipFrame.Size = UDim2.fromOffset(Row.AbsoluteSize.X - 22 , 0);
 			TipFrame.Visible = true;
 			Q.TextColor3 = NeverLose.AccentColor;
 		end));
