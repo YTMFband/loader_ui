@@ -2429,7 +2429,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		TipFrame.Name = NeverLose.RandomString();
 		TipFrame.Parent = NeverLose.ScreenGui;
 		TipFrame.Visible = false;
-		TipFrame.BackgroundColor3 = NeverLose.Theme.Elem2;
+		TipFrame.BackgroundColor3 = Color3.fromRGB(16 , 17 , 22);
 		TipFrame.BackgroundTransparency = 0;
 		TipFrame.BorderSizePixel = 0;
 		TipFrame.Position = UDim2.new(0 , 11 , 1 , 4);
@@ -2437,7 +2437,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		TipFrame.AutomaticSize = Enum.AutomaticSize.Y;
 		TipFrame.Font = Enum.Font.GothamMedium;
 		TipFrame.Text = Tip;
-		TipFrame.TextColor3 = NeverLose.Theme.Text;
+		TipFrame.TextColor3 = Color3.fromRGB(169 , 173 , 184);
 		TipFrame.TextSize = 11;
 		TipFrame.TextWrapped = true;
 		TipFrame.TextXAlignment = Enum.TextXAlignment.Left;
@@ -2452,8 +2452,13 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		TipPad.Parent = TipFrame;
 
 		local TipCorner = Instance.new('UICorner');
-		TipCorner.CornerRadius = UDim.new(0 , 6);
+		TipCorner.CornerRadius = UDim.new(0 , 8);
 		TipCorner.Parent = TipFrame;
+
+		local TipStroke = Instance.new('UIStroke');
+		TipStroke.Color = Color3.fromRGB(42 , 44 , 52);
+		TipStroke.Transparency = 0;
+		TipStroke.Parent = TipFrame;
 
 		NeverLose:AddSignal(Q.MouseEnter:Connect(function()
 			TipFrame.Position = UDim2.fromOffset(Row.AbsolutePosition.X + 11 , Row.AbsolutePosition.Y + Row.AbsoluteSize.Y + 4);
