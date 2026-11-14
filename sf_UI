@@ -2386,6 +2386,86 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 	local handle = {};
 	local ZINdex = Handler.ZIndex;
 
+	function handle:AddQuestion(Tip: string)
+		local Row = Handler.Parent;
+		if not Row then
+			return handle;
+		end;
+
+		local Lbl = Row:FindFirstChildWhichIsA('TextLabel');
+		if not Lbl or type(Tip) ~= 'string' or Tip == '' then
+			return handle;
+		end;
+
+		local TextW = NeverLose.GetTextSize(Lbl.Text , Lbl.TextSize , Lbl.Font , Vector2.new(math.huge , math.huge)).X;
+
+		local Q = Instance.new('TextButton');
+		Q.Name = NeverLose.RandomString();
+		Q.Parent = Row;
+		Q.BackgroundColor3 = NeverLose.Theme.Field;
+		Q.BackgroundTransparency = 0.2;
+		Q.BorderSizePixel = 0;
+		Q.AutoButtonColor = false;
+		Q.Position = UDim2.new(0 , Lbl.Position.X.Offset + TextW + 8 , 0 , 8);
+		Q.Size = UDim2.new(0 , 14 , 0 , 14);
+		Q.Font = Enum.Font.GothamBold;
+		Q.Text = '?';
+		Q.TextSize = 10;
+		Q.TextColor3 = NeverLose.Theme.TextMute;
+		Q.ZIndex = Lbl.ZIndex + 1;
+
+		local QCorner = Instance.new('UICorner');
+		QCorner.CornerRadius = UDim.new(1 , 0);
+		QCorner.Parent = Q;
+
+		local QStroke = Instance.new('UIStroke');
+		QStroke.Color = NeverLose.Theme.Stroke;
+		QStroke.Transparency = 0.2;
+		QStroke.Parent = Q;
+
+		local TipFrame = Instance.new('TextLabel');
+		TipFrame.Name = NeverLose.RandomString();
+		TipFrame.Parent = Row;
+		TipFrame.Visible = false;
+		TipFrame.BackgroundColor3 = NeverLose.Theme.Elem2;
+		TipFrame.BackgroundTransparency = 0;
+		TipFrame.BorderSizePixel = 0;
+		TipFrame.Position = UDim2.new(0 , Lbl.Position.X.Offset , 1 , 4);
+		TipFrame.Size = UDim2.new(0 , 230 , 0 , 0);
+		TipFrame.AutomaticSize = Enum.AutomaticSize.Y;
+		TipFrame.Font = Enum.Font.GothamMedium;
+		TipFrame.Text = Tip;
+		TipFrame.TextColor3 = NeverLose.Theme.Text;
+		TipFrame.TextSize = 11;
+		TipFrame.TextWrapped = true;
+		TipFrame.TextXAlignment = Enum.TextXAlignment.Left;
+		TipFrame.TextYAlignment = Enum.TextYAlignment.Top;
+		TipFrame.ZIndex = Lbl.ZIndex + 20;
+
+		local TipPad = Instance.new('UIPadding');
+		TipPad.PaddingLeft = UDim.new(0 , 8);
+		TipPad.PaddingRight = UDim.new(0 , 8);
+		TipPad.PaddingTop = UDim.new(0 , 6);
+		TipPad.PaddingBottom = UDim.new(0 , 6);
+		TipPad.Parent = TipFrame;
+
+		local TipCorner = Instance.new('UICorner');
+		TipCorner.CornerRadius = UDim.new(0 , 6);
+		TipCorner.Parent = TipFrame;
+
+		NeverLose:AddSignal(Q.MouseEnter:Connect(function()
+			TipFrame.Visible = true;
+			Q.TextColor3 = NeverLose.AccentColor;
+		end));
+
+		NeverLose:AddSignal(Q.MouseLeave:Connect(function()
+			TipFrame.Visible = false;
+			Q.TextColor3 = NeverLose.Theme.TextMute;
+		end));
+
+		return handle;
+	end;
+
 	function handle:AddToggle(Config)
 		Config = NeverLose:ProcessParams(Config , {
 			Default = false,
@@ -4652,102 +4732,6 @@ end;
 function NeverLose:RegisiterItem(Frame: Frame , Signel)
 	local idx = {};
 	local LayerIndex = Frame.ZIndex;
-
-	function idx:AddQuestion(Name: string,Tip: string)
-		local Z = LayerIndex;
-
-		local Row = Instance.new('Frame');
-		Row.Name = NeverLose.RandomString();
-		Row.Parent = Frame;
-		Row.BackgroundTransparency = 1;
-		Row.BorderSizePixel = 0;
-		Row.Size = UDim2.new(1 , 0 , 0 , 30);
-		Row.ZIndex = Z + 8;
-
-		NeverLose:AddQuery(Row , Name);
-
-		local TextW = NeverLose.GetTextSize(Name , 13 , Enum.Font.GothamMedium , Vector2.new(math.huge , math.huge)).X;
-
-		local Lbl = Instance.new('TextLabel');
-		Lbl.Name = NeverLose.RandomString();
-		Lbl.Parent = Row;
-		Lbl.BackgroundTransparency = 1;
-		Lbl.BorderSizePixel = 0;
-		Lbl.Position = UDim2.new(0 , 11 , 0 , 6);
-		Lbl.Size = UDim2.new(0 , TextW + 2 , 0 , 15);
-		Lbl.ZIndex = Z + 9;
-		Lbl.Font = Enum.Font.GothamMedium;
-		Lbl.Text = Name;
-		Lbl.TextColor3 = NeverLose.Theme.Text;
-		Lbl.TextSize = 13;
-		Lbl.TextTransparency = 0.35;
-		Lbl.TextXAlignment = Enum.TextXAlignment.Left;
-
-		local Q = Instance.new('TextButton');
-		Q.Name = NeverLose.RandomString();
-		Q.Parent = Row;
-		Q.BackgroundColor3 = NeverLose.Theme.Field;
-		Q.BackgroundTransparency = 0.2;
-		Q.BorderSizePixel = 0;
-		Q.AutoButtonColor = false;
-		Q.Position = UDim2.new(0 , 11 + TextW + 8 , 0 , 8);
-		Q.Size = UDim2.new(0 , 14 , 0 , 14);
-		Q.Font = Enum.Font.GothamBold;
-		Q.Text = '?';
-		Q.TextSize = 10;
-		Q.TextColor3 = NeverLose.Theme.TextMute;
-		Q.ZIndex = Z + 10;
-
-		local QCorner = Instance.new('UICorner');
-		QCorner.CornerRadius = UDim.new(1 , 0);
-		QCorner.Parent = Q;
-
-		local QStroke = Instance.new('UIStroke');
-		QStroke.Color = NeverLose.Theme.Stroke;
-		QStroke.Transparency = 0.2;
-		QStroke.Parent = Q;
-
-		local TipFrame = Instance.new('TextLabel');
-		TipFrame.Name = NeverLose.RandomString();
-		TipFrame.Parent = Row;
-		TipFrame.Visible = false;
-		TipFrame.BackgroundColor3 = NeverLose.Theme.Elem2;
-		TipFrame.BackgroundTransparency = 0;
-		TipFrame.BorderSizePixel = 0;
-		TipFrame.Position = UDim2.new(0 , 11 , 1 , 4);
-		TipFrame.Size = UDim2.new(0 , 230 , 0 , 0);
-		TipFrame.AutomaticSize = Enum.AutomaticSize.Y;
-		TipFrame.Font = Enum.Font.GothamMedium;
-		TipFrame.Text = Tip;
-		TipFrame.TextColor3 = NeverLose.Theme.Text;
-		TipFrame.TextSize = 11;
-		TipFrame.TextWrapped = true;
-		TipFrame.TextXAlignment = Enum.TextXAlignment.Left;
-		TipFrame.TextYAlignment = Enum.TextYAlignment.Top;
-		TipFrame.ZIndex = Z + 30;
-
-		local TipPad = Instance.new('UIPadding');
-		TipPad.PaddingLeft = UDim.new(0 , 8);
-		TipPad.PaddingRight = UDim.new(0 , 8);
-		TipPad.PaddingTop = UDim.new(0 , 6);
-		TipPad.PaddingBottom = UDim.new(0 , 6);
-		TipPad.Parent = TipFrame;
-
-		local TipCorner = Instance.new('UICorner');
-		TipCorner.CornerRadius = UDim.new(0 , 6);
-		TipCorner.Parent = TipFrame;
-
-		NeverLose:AddSignal(Q.MouseEnter:Connect(function()
-			TipFrame.Visible = true;
-			Q.TextColor3 = NeverLose.AccentColor;
-		end));
-
-		NeverLose:AddSignal(Q.MouseLeave:Connect(function()
-			TipFrame.Visible = false;
-			Q.TextColor3 = NeverLose.Theme.TextMute;
-		end));
-		return Row;
-	end;
 
 	function idx:AddLabel(Name: string,Warp: boolean)
 		local BasedFrame = Instance.new("Frame")
