@@ -3546,6 +3546,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 			local Width , Row = 96 , 22;
 			local Items = Config.AllowModeChange and { 'Hold' , 'Toggle' , 'Always' , 'Reset' } or { 'Reset' };
 			local Buttons = {};
+			local Dots = {};
 
 			Menu = Instance.new('Frame');
 			Menu.Name = NeverLose.RandomString();
@@ -3553,34 +3554,10 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 			Menu.BackgroundColor3 = NeverLose.MainColor;
 			Menu.BackgroundTransparency = 0.05;
 			Menu.BorderSizePixel = 0;
-			Menu.Size = UDim2.new(0 , Width , 0 , #Items * Row + 32);
+			Menu.Size = UDim2.new(0 , Width , 0 , #Items * Row + 8);
 			Menu.ZIndex = 170;
 			Menu.ClipsDescendants = true;
 
-			local MenuHead = Instance.new('Frame');
-			MenuHead.Parent = Menu;
-			MenuHead.BackgroundColor3 = Color3.fromRGB(16 , 17 , 22);
-			MenuHead.BorderSizePixel = 0;
-			MenuHead.Size = UDim2.new(1 , 0 , 0 , 22);
-			MenuHead.ZIndex = 171;
-
-			local MHGrad = Instance.new('UIGradient');
-			MHGrad.Color = ColorSequence.new(Color3.fromRGB(16 , 17 , 22));
-			MHGrad.Rotation = 90;
-			MHGrad.Parent = MenuHead;
-
-			local MHText = Instance.new('TextLabel');
-			MHText.Parent = MenuHead;
-			MHText.BackgroundTransparency = 1;
-			MHText.Position = UDim2.new(0 , 9 , 0 , 0);
-			MHText.Size = UDim2.new(1 , -18 , 1 , 0);
-			MHText.Font = Enum.Font.GothamMedium;
-			MHText.Text = 'MODE';
-			MHText.TextColor3 = NeverLose.Theme.Text;
-			MHText.TextSize = 10;
-			MHText.TextTransparency = 0.4;
-			MHText.TextXAlignment = Enum.TextXAlignment.Left;
-			MHText.ZIndex = 172;
 
 			-- пока меню открыто, окно настроек (шестерёнка) не должно закрываться от клика по нашему меню
 			FlagsHeld = true;
@@ -3613,6 +3590,8 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 					if name == 'Reset' then
 						b.TextColor3 = Color3.fromRGB(240 , 90 , 90);
 						b.TextTransparency = 0.15;
+						b.BackgroundColor3 = Color3.fromRGB(21 , 22 , 27);
+						b.BackgroundTransparency = 0;
 					else
 						local on = (KeybindLib.Mode == name);
 
@@ -3620,6 +3599,9 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 						b.BackgroundColor3 = NeverLose.AccentColor;
 						b.BackgroundTransparency = on and 0.8 or 1;
 						b.TextTransparency = on and 0 or 0.35;
+						if Dots[name] then
+							Dots[name].BackgroundTransparency = on and 0 or 1;
+						end;
 					end;
 				end;
 			end;
@@ -3633,7 +3615,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 				B.BackgroundColor3 = NeverLose.Theme.Elem;
 				B.BackgroundTransparency = 1;
 				B.BorderSizePixel = 0;
-				B.Position = UDim2.new(0 , 5 , 0 , 27 + (i - 1) * Row);
+				B.Position = UDim2.new(0 , 5 , 0 , 4 + (i - 1) * Row);
 				B.Size = UDim2.new(1 , -10 , 0 , Row - 2);
 				B.ZIndex = 171;
 				B.Font = Enum.Font.GothamMedium;
@@ -3645,6 +3627,25 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 				BC.Parent = B;
 
 				Buttons[name] = B;
+
+				if name ~= 'Reset' then
+					local Dot = Instance.new('Frame');
+					Dot.Name = NeverLose.RandomString();
+					Dot.Parent = B;
+					Dot.AnchorPoint = Vector2.new(1 , 0.5);
+					Dot.BackgroundColor3 = NeverLose.AccentColor;
+					Dot.BackgroundTransparency = 1;
+					Dot.BorderSizePixel = 0;
+					Dot.Position = UDim2.new(1 , -8 , 0.5 , 0);
+					Dot.Size = UDim2.new(0 , 6 , 0 , 6);
+					Dot.ZIndex = 172;
+
+					local DotCorner = Instance.new('UICorner');
+					DotCorner.CornerRadius = UDim.new(1 , 0);
+					DotCorner.Parent = Dot;
+
+					Dots[name] = Dot;
+				end;
 
 				B.MouseEnter:Connect(function()
 					NeverLose.PlayAnimate(B , SlowyTween , { BackgroundTransparency = 0.5 });
@@ -3672,7 +3673,7 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 			Divider.BackgroundColor3 = NeverLose.Theme.Stroke;
 			Divider.BackgroundTransparency = 0.4;
 			Divider.BorderSizePixel = 0;
-			Divider.Position = UDim2.new(0 , 8 , 0 , 27 + 3 * Row - 1);
+			Divider.Position = UDim2.new(0 , 8 , 0 , 4 + 3 * Row - 1);
 			Divider.Size = UDim2.new(1 , -16 , 0 , 1);
 			Divider.ZIndex = 171;
 			Divider.Visible = Config.AllowModeChange and true or false;
@@ -5584,6 +5585,16 @@ local SelOrder = {};
 
 		rebuildOrder();
 
+		local function selectedList()
+			local out = {};
+			for _ , v in next , SelOrder do
+				if Config.Default[v] then
+					table.insert(out , v);
+				end;
+			end;
+			return out;
+		end;
+
 		local function valueText()
 			if Config.Sort and Config.Multi and type(Config.Default) == 'table' then
 				local sorted = {};
@@ -5792,7 +5803,7 @@ Config.Default[Value] = not Config.Default[Value];
 					end;
 
 					updateText();
-					Config.Callback(Config.Default);
+					Config.Callback((Config.Sort and Config.Multi) and selectedList() or Config.Default);
 				end);
 
 				table.insert(Signals , bth);
@@ -5864,7 +5875,7 @@ Config.Default = v;
 				it.mark();
 			end;
 
-			Config.Callback(Config.Default);
+			Config.Callback((Config.Sort and Config.Multi) and selectedList() or Config.Default);
 		end;
 
 		function Lib:SetValues(list)
