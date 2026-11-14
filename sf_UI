@@ -1892,7 +1892,7 @@ function NeverLose:CreateOptionWindow(Frame: Frame , Zindex)
 	OptionHandler.BorderColor3 = Color3.fromRGB(0, 0, 0)
 	OptionHandler.BorderSizePixel = 0
 	OptionHandler.ClipsDescendants = true
-	OptionHandler.Position = UDim2.new(255,255,255,255)
+	OptionHandler.Position = UDim2.new(0,0,0,0)
 	OptionHandler.Size = UDim2.new(0, 220, 0, 75)
 	OptionHandler.ZIndex = Zindex + 9
 
@@ -3026,6 +3026,13 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 		Window.SetRender(Signal:GetValue());
 		Signal:Connect(Window.SetRender);
 
+		Window.Signal:Connect(function(v)
+			if not v and reciveSignal then
+				reciveSignal:Disconnect();
+				reciveSignal = nil;
+			end;
+		end);
+
 		local bthg = NeverLose:CreateInput(Option , LPH_NO_VIRTUALIZE(function()
 			if reciveSignal then
 				reciveSignal:Disconnect();
@@ -3552,13 +3559,13 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 
 			local MenuHead = Instance.new('Frame');
 			MenuHead.Parent = Menu;
-			MenuHead.BackgroundColor3 = Color3.fromRGB(255 , 255 , 255);
+			MenuHead.BackgroundColor3 = Color3.fromRGB(16 , 17 , 22);
 			MenuHead.BorderSizePixel = 0;
 			MenuHead.Size = UDim2.new(1 , 0 , 0 , 22);
 			MenuHead.ZIndex = 171;
 
 			local MHGrad = Instance.new('UIGradient');
-			MHGrad.Color = ColorSequence.new(NeverLose.Theme.Field:Lerp(Color3.new(1 , 1 , 1) , 0.07) , NeverLose.Theme.Field);
+			MHGrad.Color = ColorSequence.new(Color3.fromRGB(16 , 17 , 22));
 			MHGrad.Rotation = 90;
 			MHGrad.Parent = MenuHead;
 
@@ -3590,6 +3597,11 @@ function NeverLose:RegisiterHandler(Handler: Frame , Signal)
 			local MenuCorner = Instance.new('UICorner');
 			MenuCorner.CornerRadius = UDim.new(0 , 8);
 			MenuCorner.Parent = Menu;
+
+			local MenuEdge = Instance.new('UIStroke');
+			MenuEdge.Color = Color3.fromRGB(42 , 44 , 52);
+			MenuEdge.Transparency = 0;
+			MenuEdge.Parent = Menu;
 
 			local MenuStroke = Instance.new('UIStroke');
 			MenuStroke.Color = NeverLose.Theme.Stroke;
